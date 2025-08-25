@@ -1,0 +1,19 @@
+{
+  "server": {
+    "port": 8080,
+    "host": "0.0.0.0"
+  },
+  "database": {
+    "host": "localhost",
+    "port": 3306,
+    "database": "Team10Project",
+    "user": "root",
+    "password": "rootroot",
+    "maxPoolSize": 20,
+    "connectionTimeout": 10000,
+    "idleTimeout": 600000
+  },
+  "logging": {
+    "level": "INFO"
+  }
+}

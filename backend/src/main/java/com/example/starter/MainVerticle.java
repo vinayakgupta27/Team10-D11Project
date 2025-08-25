@@ -13,8 +13,10 @@ import io.vertx.sqlclient.Row;
 
 public class MainVerticle extends AbstractVerticle {
 
+  @SuppressWarnings("deprecation")
   private MySQLPool pool;
 
+  @SuppressWarnings("deprecation")
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
     

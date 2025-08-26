@@ -9,18 +9,30 @@ const Icon = ({ name, size = 14, color = '#888' }) => (
 );
 
 // --- Main Contest Card Component ---
-const ContestCard = ({
-  isPractice = false,
-  prizePool = 'Amount',
-  entryFee = 49,
-  spotsLeft = 800,
-  totalSpots = 999,
-  firstPrize = '20.5 Lakhs',
-  winnerPercentage = 59,
-  maxTeams = 20,
-  isHighlighted = false,
-}) => {
-  const fillPercentage = ((totalSpots - spotsLeft) / totalSpots) * 100;
+const ContestCard = ({ contest, onPress }) => {
+  // Extract values from database
+  const isPractice = contest.contestCategory === 'free' || contest.entryFee === 0;
+  const prizePool = formatPrizeAmount(contest.prizeAmount || 0);
+  const entryFee = contest.entryFee || 0;
+  const totalSpots = contest.contestSize || 0;
+  const spotsLeft = Math.max(0, totalSpots - (contest.currentSize || 0));
+  const firstPrize = formatPrizeAmount(contest.firstPrize || 0);
+  const winnerPercentage = totalSpots > 0 ? Math.round(((contest.noOfWinners || 0) / totalSpots) * 100) : 0;
+  const maxTeams = contest.maxTeamsAllowed || 1;
+  const isHighlighted = false; // Can be based on contest properties if needed
+  
+  const fillPercentage = totalSpots > 0 ? (((contest.currentSize || 0) / totalSpots) * 100) : 0;
+  
+  // Format prize amounts
+  function formatPrizeAmount(amount) {
+    if (amount >= 100000) {
+      return `${(amount / 100000).toFixed(1)} Lakhs`;
+    }
+    if (amount >= 1000) {
+      return `${(amount / 1000).toFixed(1)}K`;
+    }
+    return amount.toString();
+  }
   
   // Format spots display based on the design
   const formatSpots = (spots) => {
@@ -30,8 +42,15 @@ const ContestCard = ({
     return spots.toString();
   };
 
+  const handlePress = () => {
+    if (onPress) {
+      onPress(contest);
+    }
+  };
+
   return (
-    <View style={[styles.card, isHighlighted && styles.highlightedCard]}>
+    <TouchableOpacity onPress={handlePress}>
+      <View style={[styles.card, isHighlighted && styles.highlightedCard]}>
       {/* --- Top Section --- */}
       <View style={styles.topSection}>
         <View style={styles.leftSection}>
@@ -100,10 +119,11 @@ const ContestCard = ({
             </Text>
           </View>
         </View>
-      )}
-    </View>
-  );
-};
+             )}
+     </View>
+    </TouchableOpacity>
+   );
+ };
 
 // --- Styles ---
 const styles = StyleSheet.create({

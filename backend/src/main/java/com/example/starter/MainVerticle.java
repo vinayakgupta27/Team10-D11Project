@@ -36,6 +36,8 @@ public class MainVerticle extends AbstractVerticle {
     
     // API endpoint
     router.get("/api/contests").handler(this::getAllContests);
+    router.get("/api/contests/:contestId").handler(this::getContestById);
+
 
     // Start server
     vertx.createHttpServer()
@@ -87,6 +89,47 @@ public class MainVerticle extends AbstractVerticle {
         });
   }
 
+
+  private void getContestById(RoutingContext ctx) {
+    String contestIdStr = ctx.pathParam("contestId");
+    Long contestId;
+    try {
+      contestId = Long.parseLong(contestIdStr);
+    } catch (NumberFormatException e) {
+      ctx.response()
+          .setStatusCode(400)
+          .putHeader("Content-Type", "application/json")
+          .end(new JsonObject().put("error", "Invalid contest ID format").encode());
+      return;
+    }
+    pool.preparedQuery("SELECT * FROM contests WHERE contestId = ?")
+        .execute(io.vertx.sqlclient.Tuple.of(contestId))
+        .onSuccess(result -> {
+          if (result.size() == 0) {
+            ctx.response()
+                .setStatusCode(404)
+                .putHeader("Content-Type", "application/json")
+                .end(new JsonObject().put("error", "Contest not found").encode());
+          } else {
+            Row row = result.iterator().next();
+            JsonObject contest = new JsonObject();
+            for (int i = 0; i < row.size(); i++) {
+              contest.put(row.getColumnName(i), row.getValue(i));
+            }
+            ctx.response()
+                .putHeader("Content-Type", "application/json")
+                .end(contest.encode());
+          }
+        })
+        .onFailure(error -> {
+          ctx.response()
+              .setStatusCode(500)
+              .putHeader("Content-Type", "application/json")
+              .end(new JsonObject().put("error", error.getMessage()).encode());
+        });
+  }
+
+
   @Override
   public void stop(Promise<Void> stopPromise) throws Exception {
     if (pool != null) {
@@ -95,3 +138,4 @@ public class MainVerticle extends AbstractVerticle {
     stopPromise.complete();
   }
 }
+

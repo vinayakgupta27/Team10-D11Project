@@ -1,3 +1,4 @@
+// screens/ContestScreen.js
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -114,60 +115,21 @@ const ContestScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
+  container: { flex: 1, backgroundColor: '#f5f5f5' },
   header: {
     backgroundColor: '#4CAF50',
     paddingTop: 60,
     paddingBottom: 20,
     paddingHorizontal: 20,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#fff',
-    opacity: 0.9,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#666',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    paddingHorizontal: 40,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  emptySubtext: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#fff', marginBottom: 4 },
+  headerSubtitle: { fontSize: 14, color: '#fff', opacity: 0.9 },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' },
+  loadingText: { marginTop: 16, fontSize: 16, color: '#666' },
+  emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5', paddingHorizontal: 40 },
+  emptyText: { fontSize: 18, fontWeight: '600', color: '#333', textAlign: 'center', marginBottom: 8 },
+  emptySubtext: { fontSize: 14, color: '#666', textAlign: 'center' },
+  listContainer: { paddingBottom: 20 },
   sectionHeader: {
     backgroundColor: '#fff',
     paddingVertical: 12,
@@ -183,20 +145,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
-  sectionHeaderText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginRight: 12,
-  },
-  sectionHeaderLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#e0e0e0',
-  },
-  sectionSeparator: {
-    height: 8,
-  },
+  sectionHeaderText: { fontSize: 16, fontWeight: 'bold', color: '#333', marginRight: 12 },
+  sectionHeaderLine: { flex: 1, height: 1, backgroundColor: '#e0e0e0' },
+  sectionSeparator: { height: 8 },
 });
 
 export default ContestScreen;

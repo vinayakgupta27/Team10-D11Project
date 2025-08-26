@@ -1,18 +1,34 @@
+// App.js
+import * as React from 'react';
+import { StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import EntryScreen from './screens/EntryScreen';
 import ContestScreen from './screens/ContestScreen';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <ContestScreen />
+    <NavigationContainer>
       <StatusBar style="light" />
-    </View>
+      <Stack.Navigator
+        initialRouteName="Entry"
+        screenOptions={{
+          headerTitleAlign: 'center',
+          headerBackTitleVisible: true,
+          contentStyle: styles.container,
+        }}
+      >
+        <Stack.Screen name="Entry" component={EntryScreen} options={{ title: 'Welcome' }} />
+        <Stack.Screen name="ContestList" component={ContestScreen} options={{ title: 'Contest List' }} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
+  container: { backgroundColor: '#f5f5f5' },
 });

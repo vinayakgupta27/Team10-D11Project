@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 
 // --- Reusable Icon Component ---
 const Icon = ({ name, size = 14, color = '#888' }) => (
@@ -9,7 +9,7 @@ const Icon = ({ name, size = 14, color = '#888' }) => (
 );
 
 // --- Main Contest Item Component ---
-const ContestItem = ({ contest, onPress }) => {
+const ContestItem = ({ contest, onPress, onJoin }) => {
   // Extract values from database
   const isPractice = contest.contestCategory === 'free' || contest.entryFee === 0;
   const prizePool = formatPrizeAmount(contest.prizeAmount || 0);
@@ -48,8 +48,14 @@ const ContestItem = ({ contest, onPress }) => {
     }
   };
 
+  const handleJoin = () => {
+    if (onJoin) {
+      onJoin(contest);
+    }
+  };
+
   return (
-    <TouchableOpacity onPress={handlePress}>
+    <Pressable onPress={handlePress}>
       <View style={[styles.card, isHighlighted && styles.highlightedCard]}>
       {/* --- Top Section --- */}
       <View style={styles.topSection}>
@@ -62,11 +68,14 @@ const ContestItem = ({ contest, onPress }) => {
           {!isPractice && (
             <Text style={styles.entryFeeText}>₹{entryFee}</Text>
           )}
-          <TouchableOpacity style={isPractice ? styles.joinButton : styles.entryButton}>
+          <Pressable
+            onPress={(e) => { e.stopPropagation && e.stopPropagation(); handleJoin(); }}
+            style={isPractice ? styles.joinButton : styles.entryButton}
+          >
             <Text style={styles.buttonText}>
               {isPractice ? 'JOIN' : '₹EF'}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
 
@@ -121,7 +130,7 @@ const ContestItem = ({ contest, onPress }) => {
         </View>
              )}
      </View>
-    </TouchableOpacity>
+    </Pressable>
    );
  };
 

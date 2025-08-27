@@ -10,11 +10,14 @@ import {
   Alert,
 } from 'react-native';
 import ContestItem from '../components/ContestItem';
+import JoinConfirmSheet from '../components/JoinConfirmSheet';
 import { ContestService } from '../services/ContestService';
 
 const ContestScreen = ({ navigation }) => {
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedContest, setSelectedContest] = useState(null);
+  const [sheetVisible, setSheetVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -49,8 +52,19 @@ const ContestScreen = ({ navigation }) => {
     navigation.navigate('ContestDetail', { contest });
   };
 
+  const handleJoinPress = (contest) => {
+    setSelectedContest(contest);
+    setSheetVisible(true);
+  };
+
+  const handleConfirmJoin = () => {
+    setSheetVisible(false);
+    // Optionally navigate or call API
+    // navigation.navigate('ContestDetail', { contest: selectedContest });
+  };
+
   const renderItem = ({ item }) => (
-    <ContestItem contest={item} onPress={handleContestPress} />
+    <ContestItem contest={item} onPress={handleContestPress} onJoin={handleJoinPress} />
   );
 
   if (loading) {
@@ -94,6 +108,14 @@ const ContestScreen = ({ navigation }) => {
         }
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
+      />
+
+      <JoinConfirmSheet
+        visible={sheetVisible}
+        onClose={() => setSheetVisible(false)}
+        entryFee={(selectedContest && selectedContest.entryFee) || 0}
+        payable={(selectedContest && Math.max(0, selectedContest.entryFee - 25)) || 0}
+        onConfirm={handleConfirmJoin}
       />
     </View>
   );

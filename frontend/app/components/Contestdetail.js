@@ -9,6 +9,8 @@ import {
   Alert,
 } from 'react-native';
 import { ContestService } from '../services/ContestService';
+import { JoinedStore } from '../services/JoinedStore';
+import JoinConfirmSheet from './JoinConfirmSheet';
 
 
 const Icon = ({ name, size = 14, color = '#888' }) => (
@@ -20,8 +22,10 @@ const Icon = ({ name, size = 14, color = '#888' }) => (
 const ContestDetail = ({ route, navigation }) => {
   const { contest } = route.params || {};
   const [contestData, setContestData] = useState(contest);
+  const [joined, setJoined] = useState(!!(contest && contest.joined));
   const [loading, setLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState('11h 43m left'); // Hardcoded 
+  const [sheetVisible, setSheetVisible] = useState(false);
 
   // Hardcoded 
   const matchInfo = {
@@ -38,12 +42,49 @@ const ContestDetail = ({ route, navigation }) => {
     }
   }, [contest]);
 
+  // Keep in sync with joins done from the list using the JoinedStore
+  useEffect(() => {
+    const id = (contest?.contestId || contest?.id);
+    const apply = () => {
+      if (!id) return;
+      const js = JoinedStore.get(id);
+      if (!js) return;
+      // Defer state updates to avoid cross-render warnings
+      setTimeout(() => {
+        setContestData((prev) => {
+          const merged = {
+            ...prev,
+            joined: js.joined ? true : (prev?.joined || false),
+            currentSize: typeof js.currentSize === 'number' ? js.currentSize : (prev?.currentSize),
+          };
+          return merged;
+        });
+        if (js.joined) setJoined(true);
+      }, 0);
+    };
+    apply();
+    const unsub = JoinedStore.subscribe(apply);
+    return () => unsub();
+  }, [contest]);
+
   const fetchRealTimeData = async () => {
     try {
       setLoading(true);
       const updatedContest = await ContestService.getContestById(contest.contestId || contest.id);
       if (updatedContest) {
+        // Merge with any joined state from the shared store to avoid mismatches
+        const id = updatedContest.contestId || updatedContest.id || contest.contestId || contest.id;
+        const js = JoinedStore.get(id);
+        if (js) {
+          if (typeof js.currentSize === 'number') {
+            updatedContest.currentSize = js.currentSize;
+          }
+          if (js.joined) {
+            updatedContest.joined = true;
+          }
+        }
         setContestData(updatedContest);
+        if (updatedContest.joined) setJoined(true);
       }
     } catch (error) {
       console.error('Failed to fetch real-time data:', error);
@@ -53,22 +94,42 @@ const ContestDetail = ({ route, navigation }) => {
   };
 
   const handleJoinContest = () => {
-    Alert.alert(
-      'Join Contest',
-      `Do you want to join this contest for ₹${entryFee}?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Join', onPress: () => joinContest() },
-      ]
-    );
+    if (joined) return;
+    setSheetVisible(true);
   };
 
   const joinContest = async () => {
     try {
+      setJoined(true);
+      const next = (prev) => ({
+        ...prev,
+        currentSize: (prev?.currentSize || 0) + 1,
+        joined: true,
+      });
+      setContestData((prev) => {
+        const updated = next(prev);
+        const id = updated.contestId || updated.id;
+        JoinedStore.markJoined(id, updated.currentSize);
+        return updated;
+      });
       Alert.alert('Success', 'You have successfully joined the contest!');
     } catch (error) {
       Alert.alert('Error', 'Failed to join contest. Please try again.');
     }
+  };
+
+  const handleSheetConfirm = () => {
+    setSheetVisible(false);
+    setTimeout(() => {
+      Alert.alert(
+        'Join Contest',
+        `Do you want to join this contest for ₹${entryFee}?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Join', onPress: () => joinContest() },
+        ]
+      );
+    }, 150);
   };
 
   const formatPrizeAmount = (amount) => {
@@ -139,8 +200,8 @@ const ContestDetail = ({ route, navigation }) => {
           </View>
 
           {/* Large JOIN Button */}
-          <TouchableOpacity style={styles.largeJoinButton} onPress={handleJoinContest}>
-            <Text style={styles.largeJoinButtonText}>JOIN ₹{entryFee}</Text>
+          <TouchableOpacity style={[styles.largeJoinButton, joined && styles.joinedButton]} onPress={handleJoinContest} disabled={joined}>
+            <Text style={styles.largeJoinButtonText}>{joined ? 'JOINED' : `JOIN ₹${entryFee}`}</Text>
           </TouchableOpacity>
 
           {/* Bottom Section */}
@@ -168,6 +229,13 @@ const ContestDetail = ({ route, navigation }) => {
           )}
         </View>
       </ScrollView>
+      <JoinConfirmSheet
+        visible={sheetVisible}
+        onClose={() => setSheetVisible(false)}
+        entryFee={entryFee}
+        payable={Math.max(0, entryFee - 25)}
+        onConfirm={handleSheetConfirm}
+      />
     </View>
   );
 };
@@ -211,6 +279,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 20,
     width: '100%',
+  },
+  joinedButton: {
+    backgroundColor: '#9CA3AF',
   },
   largeJoinButtonText: {
     color: '#FFFFFF',

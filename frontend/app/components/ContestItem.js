@@ -49,6 +49,9 @@ const ContestItem = ({ contest, onPress, onJoin }) => {
   };
 
   const handleJoin = () => {
+    if (contest && contest.joined) {
+      return;
+    }
     if (onJoin) {
       onJoin(contest);
     }
@@ -70,10 +73,14 @@ const ContestItem = ({ contest, onPress, onJoin }) => {
           )}
           <Pressable
             onPress={(e) => { e.stopPropagation && e.stopPropagation(); handleJoin(); }}
-            style={isPractice ? styles.joinButton : styles.entryButton}
+            style={
+              contest && contest.joined
+                ? styles.joinedButton
+                : (isPractice ? styles.joinButton : styles.entryButton)
+            }
           >
             <Text style={styles.buttonText}>
-              {isPractice ? 'JOIN' : '₹EF'}
+              {contest && contest.joined ? 'JOINED' : (isPractice ? 'JOIN' : '₹EF')}
             </Text>
           </Pressable>
         </View>
@@ -186,6 +193,12 @@ const styles = StyleSheet.create({
   },
   joinButton: {
     backgroundColor: '#4CAF50',
+    borderRadius: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+  },
+  joinedButton: {
+    backgroundColor: '#9CA3AF',
     borderRadius: 6,
     paddingVertical: 10,
     paddingHorizontal: 24,

@@ -14,6 +14,7 @@ import ContestItem from '../components/ContestItem';
 import JoinConfirmSheet from '../components/JoinConfirmSheet';
 import { ContestService } from '../services/ContestService';
 import { LinearGradient } from 'expo-linear-gradient';
+import { JoinedStore } from '../services/JoinedStore';
 
 const ContestScreen = ({ navigation }) => {
   const [contests, setContests] = useState([]);
@@ -28,6 +29,25 @@ const ContestScreen = ({ navigation }) => {
 
   useEffect(() => {
     loadContests();
+  }, []);
+
+  useEffect(() => {
+    const onStore = () => {
+      // Defer to next tick to avoid setState during other component renders
+      setTimeout(() => {
+        setContests((prev) => prev.map((c) => {
+          const id = c.contestId || c.id;
+          const js = JoinedStore.get(id);
+          if (!js) return c;
+          const merged = { ...c };
+          if (js.joined) merged.joined = true;
+          if (typeof js.currentSize === 'number') merged.currentSize = js.currentSize;
+          return merged;
+        }));
+      }, 0);
+    };
+    const unsub = JoinedStore.subscribe(onStore);
+    return () => unsub();
   }, []);
 
   useEffect(() => {
@@ -48,7 +68,18 @@ const ContestScreen = ({ navigation }) => {
     try {
       setLoading(true);
       const contests = await ContestService.getAllContests();
-      setContests(contests);
+      // Merge any locally joined state so values persist across navigation
+      const merged = contests.map((c) => {
+        const id = c.contestId || c.id;
+        const js = JoinedStore.get(id);
+        if (!js) return c;
+        return {
+          ...c,
+          joined: js.joined ? true : c.joined,
+          currentSize: typeof js.currentSize === 'number' ? js.currentSize : c.currentSize,
+        };
+      });
+      setContests(merged);
     } catch (error) {
       console.error('Failed to load contests:', error);
       Alert.alert(
@@ -68,7 +99,7 @@ const ContestScreen = ({ navigation }) => {
   };
 
   const handleContestPress = (contest) => {
-    // Navigate to ContestDetail screen with contest data
+    // Navigate to details with only serializable data; syncing handled via JoinedStore
     navigation.navigate('ContestDetail', { contest });
   };
 
@@ -89,6 +120,12 @@ const ContestScreen = ({ navigation }) => {
           {
             text: 'Join',
             onPress: () => {
+              // Update local list: mark joined and decrement spots
+              if (selectedContest) {
+                const id = selectedContest.contestId || selectedContest.id;
+                const updatedCurrent = (selectedContest.currentSize || 0) + 1;
+                JoinedStore.markJoined(id, updatedCurrent);
+              }
               Alert.alert('Success', 'You have successfully joined the contest!');
             },
           },

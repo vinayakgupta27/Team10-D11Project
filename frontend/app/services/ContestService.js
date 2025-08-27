@@ -56,6 +56,30 @@ export const ContestService = {
   },
 
   /**
+   * Fetch a specific contest by ID from backend
+   */
+  async getContestById(contestId) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/contests/${contestId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const contest = await response.json();
+      return contest;
+    } catch (error) {
+      console.error('Error fetching contest by ID:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Group contests by title for sectioned display
    */
   groupContestsByTitle(contests) {

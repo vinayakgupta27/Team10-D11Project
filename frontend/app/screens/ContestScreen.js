@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  SectionList,
+  FlatList,
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
@@ -12,8 +12,8 @@ import {
 import ContestItem from '../components/ContestItem';
 import { ContestService } from '../services/ContestService';
 
-const ContestScreen = () => {
-  const [sections, setSections] = useState([]);
+const ContestScreen = ({ navigation }) => {
+  const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -25,8 +25,7 @@ const ContestScreen = () => {
     try {
       setLoading(true);
       const contests = await ContestService.getAllContests();
-      const groupedContests = ContestService.groupContestsByTitle(contests);
-      setSections(groupedContests);
+      setContests(contests);
     } catch (error) {
       console.error('Failed to load contests:', error);
       Alert.alert(
@@ -46,25 +45,13 @@ const ContestScreen = () => {
   };
 
   const handleContestPress = (contest) => {
-    Alert.alert(
-      'Contest Details',
-      `Contest ID: ${contest.contestId || contest.id}\nTitle: ${contest.title}`,
-      [{ text: 'OK' }]
-    );
+    // Navigate to ContestDetail screen with contest data
+    navigation.navigate('ContestDetail', { contest });
   };
-
-  const renderSectionHeader = ({ section: { title } }) => (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionHeaderText}>{title}</Text>
-      <View style={styles.sectionHeaderLine} />
-    </View>
-  );
 
   const renderItem = ({ item }) => (
     <ContestItem contest={item} onPress={handleContestPress} />
   );
-
-  const renderSectionSeparator = () => <View style={styles.sectionSeparator} />;
 
   if (loading) {
     return (
@@ -75,7 +62,7 @@ const ContestScreen = () => {
     );
   }
 
-  if (sections.length === 0) {
+  if (contests.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>No contests available</Text>
@@ -89,16 +76,14 @@ const ContestScreen = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Dream11 Contests</Text>
         <Text style={styles.headerSubtitle}>
-          {sections.reduce((total, section) => total + section.data.length, 0)} contests available
+          {contests.length} contests available
         </Text>
       </View>
 
-      <SectionList
-        sections={sections}
+      <FlatList
+        data={contests}
         keyExtractor={(item, index) => `${item.contestId || item.id || index}`}
         renderItem={renderItem}
-        renderSectionHeader={renderSectionHeader}
-        SectionSeparatorComponent={renderSectionSeparator}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -130,24 +115,6 @@ const styles = StyleSheet.create({
   emptyText: { fontSize: 18, fontWeight: '600', color: '#333', textAlign: 'center', marginBottom: 8 },
   emptySubtext: { fontSize: 14, color: '#666', textAlign: 'center' },
   listContainer: { paddingBottom: 20 },
-  sectionHeader: {
-    backgroundColor: '#fff',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginTop: 16,
-    marginHorizontal: 16,
-    borderRadius: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  sectionHeaderText: { fontSize: 16, fontWeight: 'bold', color: '#333', marginRight: 12 },
-  sectionHeaderLine: { flex: 1, height: 1, backgroundColor: '#e0e0e0' },
-  sectionSeparator: { height: 8 },
 });
 
 export default ContestScreen;

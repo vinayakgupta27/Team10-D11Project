@@ -8,6 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import EntryScreen from './screens/EntryScreen';
 import ContestScreen from './screens/ContestScreen';
+import ContestDetail from './components/Contestdetail';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,7 @@ export default function App() {
       >
         <Stack.Screen name="Entry" component={EntryScreen} options={{ title: 'Welcome' }} />
         <Stack.Screen name="ContestList" component={ContestScreen} options={{ title: 'Contest List' }} />
+        <Stack.Screen name="ContestDetail" component={ContestDetail} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

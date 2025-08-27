@@ -25,7 +25,7 @@ export default function App() {
         }}
       >
         <Stack.Screen name="Entry" component={EntryScreen} options={{ title: 'Welcome' }} />
-        <Stack.Screen name="ContestList" component={ContestScreen} options={{ title: 'Contest List' }} />
+        <Stack.Screen name="ContestList" component={ContestScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ContestDetail" component={ContestDetail} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>

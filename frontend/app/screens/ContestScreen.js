@@ -1,5 +1,5 @@
 // screens/ContestScreen.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,12 @@ import {
   ActivityIndicator,
   RefreshControl,
   Alert,
+  Image,
 } from 'react-native';
 import ContestItem from '../components/ContestItem';
 import JoinConfirmSheet from '../components/JoinConfirmSheet';
 import { ContestService } from '../services/ContestService';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ContestScreen = ({ navigation }) => {
   const [contests, setContests] = useState([]);
@@ -19,10 +21,28 @@ const ContestScreen = ({ navigation }) => {
   const [selectedContest, setSelectedContest] = useState(null);
   const [sheetVisible, setSheetVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [timeLeft, setTimeLeft] = useState('');
+
+  const matchInfo = useMemo(() => ({ team1: 'BPH', team2: 'OVI' }), []);
+  const matchStartTime = useMemo(() => new Date(Date.now() + (11 * 60 + 43) * 60 * 1000), []);
 
   useEffect(() => {
     loadContests();
   }, []);
+
+  useEffect(() => {
+    const update = () => {
+      const now = Date.now();
+      const ms = Math.max(0, matchStartTime.getTime() - now);
+      const totalMinutes = Math.floor(ms / (60 * 1000));
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      setTimeLeft(`${hours}h ${minutes}m left`);
+    };
+    update();
+    const id = setInterval(update, 60 * 1000);
+    return () => clearInterval(id);
+  }, [matchStartTime]);
 
   const loadContests = async () => {
     try {
@@ -87,12 +107,27 @@ const ContestScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Dream11 Contests</Text>
-        <Text style={styles.headerSubtitle}>
-          {contests.length} contests available
-        </Text>
-      </View>
+      <LinearGradient
+        colors={["#8A0F1A", "#16181D", "#0D0F13"]}
+        locations={[0, 0.35, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
+        <Image
+          source={require('../assets/images/grid_pattern.png')}
+          style={styles.headerPattern}
+          resizeMode="cover"
+        />
+        <View style={styles.headerRow}>
+          <Text onPress={() => navigation.goBack()} style={styles.backArrow}>←</Text>
+          <View style={styles.headerCenter}>
+            <Text style={styles.headerTitle}>{matchInfo.team1} v {matchInfo.team2}</Text>
+            <Text style={styles.headerSubtitle}>{timeLeft}</Text>
+          </View>
+          <View style={{ width: 24 }} />
+        </View>
+      </LinearGradient>
 
       <FlatList
         data={contests}
@@ -124,13 +159,25 @@ const ContestScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   header: {
-    backgroundColor: '#4CAF50',
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+    paddingTop: 52,
+    paddingBottom: 14,
+    paddingHorizontal: 16,
+    position: 'relative',
   },
-  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#fff', marginBottom: 4 },
-  headerSubtitle: { fontSize: 14, color: '#fff', opacity: 0.9 },
+  headerRow: { flexDirection: 'row', alignItems: 'center' },
+  backArrow: { color: '#ffffff', fontSize: 24, fontWeight: 'bold', width: 24 },
+  headerCenter: { flex: 1, alignItems: 'center' },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: '#ffffff', marginBottom: 2, letterSpacing: 0.3 },
+  headerSubtitle: { fontSize: 13, color: '#cbd5e1' },
+  headerPattern: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: 165,
+    height: 128.32654,
+    opacity: 0.4,
+    pointerEvents: 'none',
+  },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' },
   loadingText: { marginTop: 16, fontSize: 16, color: '#666' },
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5', paddingHorizontal: 40 },

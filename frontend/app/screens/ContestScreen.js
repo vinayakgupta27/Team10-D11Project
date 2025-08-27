@@ -78,9 +78,23 @@ const ContestScreen = ({ navigation }) => {
   };
 
   const handleConfirmJoin = () => {
+    const fee = (selectedContest && selectedContest.entryFee) || 0;
     setSheetVisible(false);
-    // Optionally navigate or call API
-    // navigation.navigate('ContestDetail', { contest: selectedContest });
+    setTimeout(() => {
+      Alert.alert(
+        'Join Contest',
+        `Do you want to join this contest for ₹${fee}?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Join',
+            onPress: () => {
+              Alert.alert('Success', 'You have successfully joined the contest!');
+            },
+          },
+        ]
+      );
+    }, 150);
   };
 
   const renderItem = ({ item }) => (

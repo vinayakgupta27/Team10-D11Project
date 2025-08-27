@@ -7,10 +7,13 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Image,
 } from 'react-native';
 import { ContestService } from '../services/ContestService';
 import { JoinedStore } from '../services/JoinedStore';
 import JoinConfirmSheet from './JoinConfirmSheet';
+import { LinearGradient } from 'expo-linear-gradient';
+import { CountdownStore } from '../services/CountdownStore';
 
 
 const Icon = ({ name, size = 14, color = '#888' }) => (
@@ -24,14 +27,14 @@ const ContestDetail = ({ route, navigation }) => {
   const [contestData, setContestData] = useState(contest);
   const [joined, setJoined] = useState(!!(contest && contest.joined));
   const [loading, setLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState('11h 43m left'); // Hardcoded 
+  const [timeLeft, setTimeLeft] = useState('11h 43m 00s left'); // Hardcoded 
   const [sheetVisible, setSheetVisible] = useState(false);
 
   // Hardcoded 
   const matchInfo = {
     team1: 'BPH',
     team2: 'OVI',
-    timeLeft: '11h 43m left',
+    timeLeft: '11h 43m 00s left',
   };
 
   useEffect(() => {
@@ -41,6 +44,21 @@ const ContestDetail = ({ route, navigation }) => {
       return () => clearInterval(interval);
     }
   }, [contest]);
+  // Subscribe to shared countdown to keep header timer in sync
+  useEffect(() => {
+    const update = () => {
+      const ms = CountdownStore.getRemaining();
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      const pad = (n) => (n < 10 ? `0${n}` : `${n}`);
+      setTimeLeft(`${hours}h ${pad(minutes)}m ${pad(seconds)}s left`);
+    };
+    update();
+    const unsub = CountdownStore.subscribe(update);
+    return () => unsub();
+  }, []);
 
   // Keep in sync with joins done from the list using the JoinedStore
   useEffect(() => {
@@ -164,16 +182,28 @@ const ContestDetail = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backArrow}>
-          <Text style={styles.backArrowText}>←</Text>
-        </TouchableOpacity>
-        <View style={styles.matchInfo}>
-          <Text style={styles.matchText}>{matchInfo.team1} v {matchInfo.team2}</Text>
-          <Text style={styles.timeText}>{matchInfo.timeLeft}</Text>
+      {/* Header (matches ContestScreen) */}
+      <LinearGradient
+        colors={["#8A0F1A", "#16181D", "#0D0F13"]}
+        locations={[0, 0.35, 1]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.header}
+      >
+        <Image
+          source={require('../assets/images/grid_pattern.png')}
+          style={styles.headerPattern}
+          resizeMode="cover"
+        />
+        <View style={styles.headerRow}>
+          <Text onPress={() => navigation.goBack()} style={styles.backArrowText}>←</Text>
+          <View style={styles.headerCenter}>
+            <Text style={styles.headerTitle}>{matchInfo.team1} v {matchInfo.team2}</Text>
+            <Text style={styles.headerSubtitle}>{timeLeft}</Text>
+          </View>
+          <View style={{ width: 24 }} />
         </View>
-      </View>
+      </LinearGradient>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Contest Card (matching ContestItem.js structure) */}
@@ -243,18 +273,25 @@ const ContestDetail = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   header: {
-    backgroundColor: '#2C2C2C',
-    paddingTop: 50,
-    paddingBottom: 16,
+    paddingTop: 52,
+    paddingBottom: 14,
     paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
+    position: 'relative',
   },
-  backArrow: { width: 30 },
-  backArrowText: { color: '#ffffff', fontSize: 24, fontWeight: 'bold' },
-  matchInfo: { flex: 1, alignItems: 'center' },
-  matchText: { color: '#ffffff', fontSize: 18, fontWeight: 'bold', marginBottom: 2 },
-  timeText: { color: '#ffffff', fontSize: 14 },
+  headerRow: { flexDirection: 'row', alignItems: 'center' },
+  backArrowText: { color: '#ffffff', fontSize: 24, fontWeight: 'bold', width: 24 },
+  headerCenter: { flex: 1, alignItems: 'center' },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: '#ffffff', marginBottom: 2, letterSpacing: 0.3 },
+  headerSubtitle: { fontSize: 13, color: '#cbd5e1' },
+  headerPattern: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: 165,
+    height: 128.32654,
+    opacity: 0.4,
+    pointerEvents: 'none',
+  },
   content: { flex: 1, paddingHorizontal: 16, paddingTop: 20 },
   
   // Card styles (matching ContestItem.js)

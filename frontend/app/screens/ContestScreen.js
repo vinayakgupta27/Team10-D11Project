@@ -15,6 +15,7 @@ import JoinConfirmSheet from '../components/JoinConfirmSheet';
 import { ContestService } from '../services/ContestService';
 import { LinearGradient } from 'expo-linear-gradient';
 import { JoinedStore } from '../services/JoinedStore';
+import { CountdownStore } from '../services/CountdownStore';
 
 const ContestScreen = ({ navigation }) => {
   const [contests, setContests] = useState([]);
@@ -51,17 +52,20 @@ const ContestScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
+    // Initialize shared countdown once
+    CountdownStore.setTarget(matchStartTime.getTime());
     const update = () => {
-      const now = Date.now();
-      const ms = Math.max(0, matchStartTime.getTime() - now);
-      const totalMinutes = Math.floor(ms / (60 * 1000));
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
-      setTimeLeft(`${hours}h ${minutes}m left`);
+      const ms = CountdownStore.getRemaining();
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      const pad = (n) => (n < 10 ? `0${n}` : `${n}`);
+      setTimeLeft(`${hours}h ${pad(minutes)}m ${pad(seconds)}s left`);
     };
     update();
-    const id = setInterval(update, 60 * 1000);
-    return () => clearInterval(id);
+    const unsub = CountdownStore.subscribe(update);
+    return () => unsub();
   }, [matchStartTime]);
 
   const loadContests = async () => {

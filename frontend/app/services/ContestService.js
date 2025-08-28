@@ -98,5 +98,28 @@ export const ContestService = {
       title: title,
       data: grouped[title],
     }));
+  },
+
+  /**
+   * Join a contest on the backend; returns updated contest
+   */
+  async joinContest(contestId, userId = '200095') {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/contests/${contestId}/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'userid': userId,
+        },
+      });
+      if (!response.ok) {
+        const text = await response.text().catch(() => '');
+        throw new Error(text || `HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error joining contest:', error);
+      throw error;
+    }
   }
 };

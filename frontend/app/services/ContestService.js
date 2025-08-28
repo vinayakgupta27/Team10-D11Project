@@ -118,7 +118,7 @@ export const ContestService = {
       }
       return await response.json();
     } catch (error) {
-      console.error('Error joining contest:', error);
+      // console.error('Error joining contest:', error);
       throw error;
     }
   }

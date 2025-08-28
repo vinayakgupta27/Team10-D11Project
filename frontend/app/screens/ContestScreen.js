@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
+  SectionList,
   FlatList,
   StyleSheet,
   ActivityIndicator,
@@ -24,6 +25,38 @@ const ContestScreen = ({ navigation }) => {
   const [sheetVisible, setSheetVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [timeLeft, setTimeLeft] = useState('');
+
+  // Function to group and sort contests
+  const groupAndSortContests = (contestsArray) => {
+    // Group contests by title
+    const grouped = contestsArray.reduce((groups, contest) => {
+      const title = contest.title || 'Other';
+      if (!groups[title]) {
+        groups[title] = [];
+      }
+      groups[title].push(contest);
+      return groups;
+    }, {});
+
+    // Sort each group by prizeAmount in descending order
+    Object.keys(grouped).forEach(title => {
+      grouped[title].sort((a, b) => (b.prizeAmount || 0) - (a.prizeAmount || 0));
+    });
+
+    // Convert to array and sort groups by their first member's prizeAmount
+    const sortedSections = Object.keys(grouped)
+      .map(title => ({
+        title,
+        data: grouped[title],
+        firstPrizeAmount: grouped[title][0]?.prizeAmount || 0
+      }))
+      .sort((a, b) => b.firstPrizeAmount - a.firstPrizeAmount);
+
+    return sortedSections;
+  };
+
+  // Memoized sorted sections
+  const sortedSections = useMemo(() => groupAndSortContests(contests), [contests]);
 
   const matchInfo = useMemo(() => ({ team1: 'BPH', team2: 'OVI' }), []);
   const matchStartTime = useMemo(() => new Date(Date.now() + (11 * 60 + 43) * 60 * 1000), []);
@@ -151,7 +184,7 @@ const ContestScreen = ({ navigation }) => {
     );
   }
 
-  if (contests.length === 0) {
+  if (sortedSections.length === 0) {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>No contests available</Text>
@@ -185,9 +218,23 @@ const ContestScreen = ({ navigation }) => {
       </LinearGradient>
 
       <FlatList
-        data={contests}
-        keyExtractor={(item, index) => `${item.contestId || item.id || index}`}
-        renderItem={renderItem}
+        data={sortedSections}
+        keyExtractor={(section, index) => `section-${index}`}
+        renderItem={({ item: section }) => (
+          <View style={styles.sectionContainer}>
+            {/* Section Header */}
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionHeaderText}>{section.title}</Text>
+            </View>
+            
+            {/* Contest Cards in this section */}
+            {section.data.map((contest, index) => (
+              <View key={`${contest.contestId || contest.id || index}`} style={styles.contestWrapper}>
+                <ContestItem contest={contest} onPress={handleContestPress} onJoin={handleJoinPress} />
+              </View>
+            ))}
+          </View>
+        )}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -239,6 +286,32 @@ const styles = StyleSheet.create({
   emptyText: { fontSize: 18, fontWeight: '600', color: '#333', textAlign: 'center', marginBottom: 8 },
   emptySubtext: { fontSize: 14, color: '#666', textAlign: 'center' },
   listContainer: { paddingBottom: 20 },
+  sectionContainer: {
+    backgroundColor: '#ffffff',
+    marginHorizontal: 0,
+    marginBottom: 10,
+    borderRadius: 0,
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+    overflow: 'hidden',
+  },
+  sectionHeader: {
+    backgroundColor: '#ffffff',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+  },
+  sectionHeaderText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    letterSpacing: 0.3,
+  },
+  contestWrapper: {
+    backgroundColor: '#ffffff',
+  },
 });
 
 export default ContestScreen;

@@ -68,9 +68,9 @@ const ContestItem = ({ contest, onPress, onJoin }) => {
           </Text>
         </View>
         <View style={styles.rightSection}>
-          {!isPractice && (
-            <Text style={styles.entryFeeText}>₹{entryFee}</Text>
-          )}
+            {/* {!isPractice && (
+              <Text style={styles.entryFeeText}>₹{entryFee}</Text>
+            )} */}
           <Pressable
             onPress={(e) => { e.stopPropagation && e.stopPropagation(); handleJoin(); }}
             style={
@@ -80,7 +80,7 @@ const ContestItem = ({ contest, onPress, onJoin }) => {
             }
           >
             <Text style={styles.buttonText}>
-              {contest && contest.joined ? 'JOINED' : (isPractice ? 'JOIN' : '₹EF')}
+              {contest && contest.joined ? 'JOINED' : (isPractice ? 'JOIN' : `₹${entryFee}`)}
             </Text>
           </Pressable>
         </View>
@@ -155,7 +155,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
   },
   highlightedCard: {
     borderColor: '#9C27B0',

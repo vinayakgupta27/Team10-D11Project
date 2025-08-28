@@ -105,7 +105,7 @@ const ContestDetail = ({ route, navigation }) => {
       JoinedStore.markUnjoined(id, contest?.currentSize || 0);
       setJoined(false);
       setContestData((prev) => ({ ...prev, joined: false }));
-      Alert.alert('Error', 'Failed to join contest. It may be full.');
+      navigation.navigate('ContestFull');
     }
   };
 

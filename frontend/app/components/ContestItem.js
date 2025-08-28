@@ -20,20 +20,23 @@ const ContestItem = ({ contest, onPress, onJoin }) => {
   const winnerPercentage = totalSpots > 0 ? Math.round(((contest.noOfWinners || 0) / totalSpots) * 100) : 0;
   const maxTeams = contest.maxTeamsAllowed || 1;
   const isHighlighted = false; // Can be based on contest properties if needed
-  
+
   const fillPercentage = totalSpots > 0 ? (((contest.currentSize || 0) / totalSpots) * 100) : 0;
-  
+
   // Format prize amounts
   function formatPrizeAmount(amount) {
+    if (amount >= 1000000) {
+      return `${(amount / 1000000).toFixed(2)} Crores`;
+    }
     if (amount >= 100000) {
-      return `${(amount / 100000).toFixed(1)} Lakhs`;
+      return `${(amount / 100000).toFixed(2)} Lakhs`;
     }
-    if (amount >= 1000) {
-      return `${(amount / 1000).toFixed(1)}K`;
-    }
+    // if (amount >= 1000) {
+    //   return `${(amount / 1000).toFixed(1)}K`;
+    // }
     return amount.toString();
   }
-  
+
   // Format spots display based on the design
   const formatSpots = (spots) => {
     if (spots >= 10000) {
@@ -60,86 +63,89 @@ const ContestItem = ({ contest, onPress, onJoin }) => {
   return (
     <Pressable onPress={handlePress}>
       <View style={[styles.card, isHighlighted && styles.highlightedCard]}>
-      {/* --- Top Section --- */}
-      <View style={styles.topSection}>
-        <View style={styles.leftSection}>
-          <Text style={styles.guaranteedText}>
-            {isPractice ? '✅ Guaranteed' : '✅ Guaranteed Prize Pool'}
-          </Text>
-        </View>
-        <View style={styles.rightSection}>
-            {/* {!isPractice && (
-              <Text style={styles.entryFeeText}>₹{entryFee}</Text>
-            )} */}
-          <Pressable
-            onPress={(e) => { e.stopPropagation && e.stopPropagation(); handleJoin(); }}
-            style={
-              contest && contest.joined
-                ? styles.joinedButton
-                : (isPractice ? styles.joinButton : styles.entryButton)
-            }
-          >
-            <Text style={styles.buttonText}>
-              {contest && contest.joined ? 'JOINED' : (isPractice ? 'JOIN' : `₹${entryFee}`)}
+        {/* --- Top Section --- */}
+        
+          
+            <Text style={styles.guaranteedText}>
+              {isPractice ? '✅ Guaranteed' : '✅ Guaranteed Prize Pool'}
             </Text>
-          </Pressable>
-        </View>
-      </View>
+          
+        
 
-      {/* --- Prize Pool Section --- */}
-      <View style={styles.prizeSection}>
-        <Text style={styles.prizeText}>
-          {isPractice ? 'Practice Contest' : `₹${prizePool}`}
-        </Text>
-      </View>
-
-      {/* --- Progress Bar --- */}
-      <View style={styles.progressContainer}>
-        <View style={[styles.progressBar, { width: `${fillPercentage}%` }]} />
-      </View>
-      
-      {/* --- Spots Information --- */}
-      <View style={styles.spotsSection}>
-        <Text style={styles.spotsLeftText}>
-          {spotsLeft >= 10000 ? `${formatSpots(spotsLeft)} left` : `${spotsLeft} left`}
-        </Text>
-        <Text style={styles.totalSpotsText}>
-          {totalSpots >= 10000 ? `${formatSpots(totalSpots)} spots` : `${totalSpots} spots`}
-        </Text>
-      </View>
-
-      {/* --- Bottom Section --- */}
-      {isPractice ? (
-        <View style={styles.practiceFooter}>
-          <View style={styles.gloryBadge}>
-            <Text style={styles.gloryText}>🏆 Glory Awaits!</Text>
-            <View style={styles.gloryNumber}>
-              <Text style={styles.gloryNumberText}>5</Text>
+        {/* --- Prize Pool Section --- */}
+        <View style={styles.prizeSection}>
+          <View style={styles.topSection}>
+            <View style={styles.leftSection}>
+              <Text style={styles.prizeText}>
+                {isPractice ? 'Practice Contest' : `₹${prizePool}`}
+              </Text>
+            </View>
+            <View style={styles.rightSection}>
+              <Pressable
+                onPress={(e) => { e.stopPropagation && e.stopPropagation(); handleJoin(); }}
+                style={
+                  contest && contest.joined
+                    ? styles.joinedButton
+                    : (isPractice ? styles.joinButton : styles.entryButton)
+                }
+              >
+                <Text style={styles.buttonText}>
+                  {contest && contest.joined ? 'JOINED' : (isPractice ? 'JOIN' : `₹${entryFee}`)}
+                </Text>
+              </Pressable>
             </View>
           </View>
         </View>
-      ) : (
-        <View style={styles.bottomSection}>
-          <View style={styles.footerItem}>
-            <Icon name="prize" />
-            <Text style={styles.footerText}>₹{firstPrize}</Text>
-          </View>
-          <View style={styles.footerItem}>
-            <Icon name="trophy" />
-            <Text style={styles.footerText}>{winnerPercentage}%</Text>
-          </View>
-          <View style={styles.footerItem}>
-            <Icon name="team" />
-            <Text style={styles.footerText}>
-              {maxTeams === 20 && totalSpots > 10000 ? 'Upto 20' : maxTeams}
-            </Text>
-          </View>
+
+        {/* --- Spots Information --- */}
+        <View style={styles.spotsSection}>
+          <Text style={styles.spotsLeftText}>
+            {spotsLeft >= 10000 ? `${formatSpots(spotsLeft)} left` : `${spotsLeft} left`}
+          </Text>
+          <Text style={styles.totalSpotsText}>
+            {totalSpots >= 10000 ? `${formatSpots(totalSpots)} spots` : `${totalSpots} spots`}
+          </Text>
         </View>
-             )}
-     </View>
+
+        {/* --- Progress Bar --- */}
+        <View style={styles.progressContainer}>
+          <View style={[styles.progressBar, { width: `${fillPercentage}%` }]} />
+        </View>
+
+
+
+        {/* --- Bottom Section --- */}
+        {isPractice ? (
+          <View style={styles.practiceFooter}>
+            <View style={styles.gloryBadge}>
+              <Text style={styles.gloryText}>🏆 Glory Awaits!</Text>
+              <View style={styles.gloryNumber}>
+                <Text style={styles.gloryNumberText}>5</Text>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.bottomSection}>
+            <View style={styles.footerItem}>
+              <Icon name="prize" />
+              <Text style={styles.footerText}>₹{firstPrize}</Text>
+            </View>
+            <View style={styles.footerItem}>
+              <Icon name="trophy" />
+              <Text style={styles.footerText}>{winnerPercentage}%</Text>
+            </View>
+            <View style={styles.footerItem}>
+              <Icon name="team" />
+              <Text style={styles.footerText}>
+                {maxTeams === 20 && totalSpots > 10000 ? 'Upto 20' : maxTeams}
+              </Text>
+            </View>
+          </View>
+        )}
+      </View>
     </Pressable>
-   );
- };
+  );
+};
 
 // --- Styles ---
 const styles = StyleSheet.create({
@@ -164,7 +170,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 5,
   },
   leftSection: {
     flex: 1,
@@ -175,9 +181,11 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   guaranteedText: {
-    color: '#4CAF50',
+    color: 'grey',
     fontSize: 12,
     fontWeight: '500',
+    marginBottom: 5,
+
   },
   entryFeeText: {
     color: '#666',
@@ -208,12 +216,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   prizeSection: {
-    marginBottom: 16,
+    marginBottom: 10,
   },
   prizeText: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: '900',
     color: '#333',
+
   },
   progressContainer: {
     backgroundColor: '#F0F0F0',
@@ -230,7 +239,7 @@ const styles = StyleSheet.create({
   spotsSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 5,
   },
   spotsLeftText: {
     color: '#F44336',

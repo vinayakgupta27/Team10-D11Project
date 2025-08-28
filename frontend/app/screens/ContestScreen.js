@@ -156,14 +156,18 @@ const ContestScreen = ({ navigation }) => {
           { text: 'Cancel', style: 'cancel' },
           {
             text: 'Join',
-            onPress: () => {
-              // Update local list: mark joined and decrement spots
-              if (selectedContest) {
-                const id = selectedContest.contestId || selectedContest.id;
-                const updatedCurrent = (selectedContest.currentSize || 0) + 1;
+            onPress: async () => {
+              if (!selectedContest) return;
+              const id = selectedContest.contestId || selectedContest.id;
+              try {
+                const updated = await ContestService.joinContest(id);
+                const updatedCurrent = updated.currentSize || (selectedContest.currentSize || 0) + 1;
                 JoinedStore.markJoined(id, updatedCurrent);
+                Alert.alert('Success', 'You have successfully joined the contest!');
+              } catch (e) {
+                JoinedStore.markUnjoined(id, selectedContest.currentSize || 0);
+                Alert.alert('Join Failed', 'Contest may be full or unavailable.');
               }
-              Alert.alert('Success', 'You have successfully joined the contest!');
             },
           },
         ]

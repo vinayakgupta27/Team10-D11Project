@@ -27,7 +27,7 @@ const JoinConfirmSheet = ({ visible, onClose, entryFee, payable, onConfirm }) =>
           <Text style={styles.closeText}>✕</Text>
         </Pressable>
         <Text style={styles.title}>Confirmation</Text>
-        <Text style={styles.subtitle}>Amount Unutilised + Winnings = ₹100</Text>
+        <Text style={styles.subtitle}>Amount Unutilised + Winnings = ₹{entryFee}</Text>
 
         <View style={styles.row}> 
           <Text style={styles.label}>Entry</Text>

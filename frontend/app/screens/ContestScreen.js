@@ -1,12 +1,12 @@
 // screens/ContestScreen.js
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import {View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, Alert, Image} from 'react-native';
+import {View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, Alert} from 'react-native';
 import ContestItem from '../components/ContestItem';
 import JoinConfirmSheet from '../components/JoinConfirmSheet';
+import MatchHeader from '../components/shared/MatchHeader';
 import { ContestService } from '../services/ContestService';
-import { LinearGradient } from 'expo-linear-gradient';
 import { JoinedStore } from '../services/JoinedStore';
-import { CountdownStore } from '../services/CountdownStore';
+import { useCountdown } from '../hooks/useCountdown';
 
 const ContestScreen = React.memo(({ navigation }) => {
   const [contests, setContests] = useState([]);
@@ -14,7 +14,7 @@ const ContestScreen = React.memo(({ navigation }) => {
   const [selectedContest, setSelectedContest] = useState(null);
   const [sheetVisible, setSheetVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [timeLeft, setTimeLeft] = useState('');
+  const timeLeft = useCountdown();
 
   // Function to group and sort contests
   const groupAndSortContests = (contestsArray) => {
@@ -73,21 +73,7 @@ const ContestScreen = React.memo(({ navigation }) => {
     return () => unsub();
   }, []);
 
-  useEffect(() => {
-    // Subscribe to global countdown (initialized in App.js)
-    const update = () => {
-      const ms = CountdownStore.getRemaining();
-      const totalSeconds = Math.floor(ms / 1000);
-      const hours = Math.floor(totalSeconds / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-      const pad = (n) => (n < 10 ? `0${n}` : `${n}`);
-      setTimeLeft(`${hours}h ${pad(minutes)}m ${pad(seconds)}s left`);
-    };
-    update();
-    const unsub = CountdownStore.subscribe(update);
-    return () => unsub();
-  }, []);
+
 
   const loadContests = useCallback(async () => {
     try {
@@ -189,45 +175,12 @@ const ContestScreen = React.memo(({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={["#8A0F1A", "#16181D", "#0D0F13"]}
-        locations={[0, 0.35, 1]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.header}
-      >
-        <Image
-          source={require('../assets/images/grid_pattern.png')}
-          style={styles.headerPattern}
-          resizeMode="cover"
-        />
-        <View style={styles.headerRow}>
-          <Text 
-            onPress={() => navigation.goBack()} 
-            style={styles.backArrow}
-            accessibilityRole="button"
-            accessibilityLabel="Go back"
-            accessibilityHint="Return to previous screen"
-          >
-            ←
-          </Text>
-          <View style={styles.headerCenter}>
-            <Text 
-              style={styles.headerTitle}
-              accessibilityRole="header"
-            >
-              {matchInfo.team1} v {matchInfo.team2}
-            </Text>
-            <Text 
-              style={styles.headerSubtitle}
-              accessibilityLabel={`Match starts in ${timeLeft}`}
-            >
-              {timeLeft}
-            </Text>
-          </View>
-          <View style={{ width: 24 }} />
-        </View>
-      </LinearGradient>
+      <MatchHeader 
+        team1={matchInfo.team1}
+        team2={matchInfo.team2}
+        timeLeft={timeLeft}
+        onBackPress={() => navigation.goBack()}
+      />
 
       <FlatList
         data={sortedSections}
@@ -283,26 +236,6 @@ const ContestScreen = React.memo(({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
-  header: {
-    paddingTop: 52,
-    paddingBottom: 14,
-    paddingHorizontal: 16,
-    position: 'relative',
-  },
-  headerRow: { flexDirection: 'row', alignItems: 'center' },
-  backArrow: { color: '#ffffff', fontSize: 24, fontWeight: 'bold', width: 24 },
-  headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle: { fontSize: 22, fontWeight: '800', color: '#ffffff', marginBottom: 2, letterSpacing: 0.3 },
-  headerSubtitle: { fontSize: 13, color: '#cbd5e1' },
-  headerPattern: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    width: 165,
-    height: 128.32654,
-    opacity: 0.4,
-    pointerEvents: 'none',
-  },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5' },
   loadingText: { marginTop: 16, fontSize: 16, color: '#666' },
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f5f5f5', paddingHorizontal: 40 },

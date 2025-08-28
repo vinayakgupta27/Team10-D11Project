@@ -1,49 +1,23 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
-
-// --- Reusable Icon Component ---
-const Icon = ({ name, size = 14, color = '#888' }) => (
-  <Text style={{ fontSize: size, color: color, marginRight: 4 }}>
-    {name === 'trophy' ? '🏆' : name === 'team' ? 'Ⓜ️' : '💰'}
-  </Text>
-);
+import Icon from './shared/Icon';
+import { formatPrizeAmount, formatSpots, calculateFillPercentage, calculateWinnerPercentage, calculateSpotsLeft, isPracticeContest } from '../utils/contestUtils';
 
 // --- Main Contest Item Component ---
 const ContestItem = ({ contest, onPress, onJoin }) => {
-  // Extract values from database
-  const isPractice = contest.contestCategory === 'free' || contest.entryFee === 0;
+    // Extract values from database using shared utilities
+  const isPractice = isPracticeContest(contest);
   const prizePool = formatPrizeAmount(contest.prizeAmount || 0);
   const entryFee = contest.entryFee || 0;
   const totalSpots = contest.contestSize || 0;
-  const spotsLeft = Math.max(0, totalSpots - (contest.currentSize || 0));
+  const currentSize = contest.currentSize || 0;
+  const spotsLeft = calculateSpotsLeft(totalSpots, currentSize);
   const firstPrize = formatPrizeAmount(contest.firstPrize || 0);
-  const winnerPercentage = totalSpots > 0 ? Math.round(((contest.noOfWinners || 0) / totalSpots) * 100) : 0;
+  const winnerPercentage = calculateWinnerPercentage(contest.noOfWinners || 0, totalSpots);
   const maxTeams = contest.maxTeamsAllowed || 1;
   const isHighlighted = false; // Can be based on contest properties if needed
-
-  const fillPercentage = totalSpots > 0 ? (((contest.currentSize || 0) / totalSpots) * 100) : 0;
-
-  // Format prize amounts
-  function formatPrizeAmount(amount) {
-    if (amount >= 1000000) {
-      return `${(amount / 1000000).toFixed(2)} Crores`;
-    }
-    if (amount >= 100000) {
-      return `${(amount / 100000).toFixed(2)} Lakhs`;
-    }
-    // if (amount >= 1000) {
-    //   return `${(amount / 1000).toFixed(1)}K`;
-    // }
-    return Number(amount || 0).toLocaleString('en-IN');
-  }
-
-  // Format spots display based on the design
-  const formatSpots = (spots) => {
-    if (spots >= 10000) {
-      return spots.toLocaleString().replace(/,/g, ',');
-    }
-    return spots.toString();
-  };
+  
+  const fillPercentage = calculateFillPercentage(currentSize, totalSpots);
 
   const handlePress = () => {
     if (onPress) {
@@ -161,6 +135,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    elevation: 1,
   },
   highlightedCard: {
     borderColor: '#9C27B0',

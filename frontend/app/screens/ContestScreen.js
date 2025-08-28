@@ -92,7 +92,7 @@ const ContestScreen = React.memo(({ navigation }) => {
       });
       setContests(merged);
     } catch (error) {
-      console.error('Failed to load contests:', error);
+      // console.error('Failed to load contests:', error);
       Alert.alert(
         'Error',
         'Failed to load contests. Please check your internet connection and try again.',

@@ -168,13 +168,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   entryButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#008A3C',
     borderRadius: 6,
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
   joinButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#008A3C',
     borderRadius: 6,
     paddingVertical: 10,
     paddingHorizontal: 24,

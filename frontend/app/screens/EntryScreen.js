@@ -24,7 +24,6 @@ export default function EntryScreen({ navigation }) {
         
         {/* Content Container */}
         <View style={styles.content}>
-          {/* Welcome Section */}
           <View style={styles.welcomeSection}>
             <Text style={styles.welcomeText}>Welcome to</Text>
             <Image
@@ -57,7 +56,6 @@ export default function EntryScreen({ navigation }) {
                 style={styles.buttonGradient}
               >
                 <Text style={styles.buttonText}>Join Match</Text>
-                {/* <Text style={styles.buttonSubtext}>Start Playing Now</Text> */}
               </LinearGradient>
             </Pressable>
           </View>

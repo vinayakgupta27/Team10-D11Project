@@ -1,16 +1,6 @@
 // screens/ContestScreen.js
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import {
-  View,
-  Text,
-  SectionList,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-  RefreshControl,
-  Alert,
-  Image,
-} from 'react-native';
+import {View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl, Alert, Image} from 'react-native';
 import ContestItem from '../components/ContestItem';
 import JoinConfirmSheet from '../components/JoinConfirmSheet';
 import { ContestService } from '../services/ContestService';

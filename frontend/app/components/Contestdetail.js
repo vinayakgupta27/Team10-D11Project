@@ -55,7 +55,6 @@ const ContestDetail = ({ route, navigation }) => {
     const unsub = JoinedStore.subscribe(apply);
     return () => unsub();
   }, [contest]);
-
   const fetchRealTimeData = async () => {
     try {
       setLoading(true);

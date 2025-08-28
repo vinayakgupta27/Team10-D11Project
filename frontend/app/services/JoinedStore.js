@@ -19,6 +19,15 @@ export const JoinedStore = {
     state.set(contestId, updated);
     this.emit();
   },
+  markUnjoined(contestId, nextCurrentSize) {
+    const prev = state.get(contestId) || {};
+    const updated = {
+      joined: false,
+      currentSize: typeof nextCurrentSize === 'number' ? nextCurrentSize : prev.currentSize,
+    };
+    state.set(contestId, updated);
+    this.emit();
+  },
   get(contestId) {
     return state.get(contestId);
   },

@@ -108,22 +108,24 @@ const ContestDetail = ({ route, navigation }) => {
   };
 
   const joinContest = async () => {
+    if (!contestData) return;
+    const id = contestData.contestId || contestData.id;
     try {
+      const updatedFromServer = await ContestService.joinContest(id);
+      if (updatedFromServer) {
+        const serverCurrent = updatedFromServer.currentSize;
+        if (typeof serverCurrent === 'number') {
+          JoinedStore.markJoined(id, serverCurrent);
+          setContestData((prev) => ({ ...prev, currentSize: serverCurrent, joined: true }));
+        }
+      }
       setJoined(true);
-      const next = (prev) => ({
-        ...prev,
-        currentSize: (prev?.currentSize || 0) + 1,
-        joined: true,
-      });
-      setContestData((prev) => {
-        const updated = next(prev);
-        const id = updated.contestId || updated.id;
-        JoinedStore.markJoined(id, updated.currentSize);
-        return updated;
-      });
       Alert.alert('Success', 'You have successfully joined the contest!');
     } catch (error) {
-      Alert.alert('Error', 'Failed to join contest. Please try again.');
+      JoinedStore.markUnjoined(id, contest?.currentSize || 0);
+      setJoined(false);
+      setContestData((prev) => ({ ...prev, joined: false }));
+      Alert.alert('Error', 'Failed to join contest. It may be full.');
     }
   };
 

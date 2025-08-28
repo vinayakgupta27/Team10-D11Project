@@ -148,7 +148,7 @@ const ContestDetail = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <MatchHeader 
+      <MatchHeader
         team1={matchInfo.team1}
         team2={matchInfo.team2}
         timeLeft={timeLeft}
@@ -160,7 +160,7 @@ const ContestDetail = ({ route, navigation }) => {
         <View style={styles.card}>
           {/* Guaranteed Prize Pool */}
           <View style={styles.guaranteedSection}>
-            <Text style={styles.guaranteedText}>💰 Guaranteed Prize Pool</Text>
+            <Text style={styles.guaranteedText}>✅ Guaranteed Prize Pool</Text>
           </View>
 
           {/* Prize Section */}
@@ -168,16 +168,18 @@ const ContestDetail = ({ route, navigation }) => {
             <Text style={styles.prizeText}>₹{formatPrizeAmount(prizeAmount)}</Text>
           </View>
 
-          {/* Progress Bar */}
-          <View style={styles.progressContainer}>
-            <View style={[styles.progressBar, { width: `${fillPercentage}%` }]} />
-          </View>
-
           {/* Spots Section */}
           <View style={styles.spotsSection}>
             <Text style={styles.spotsLeftText}>{formatSpots(spotsLeft)} left</Text>
             <Text style={styles.totalSpotsText}>{formatSpots(totalSpots)} spots</Text>
           </View>
+
+          {/* Progress Bar */}
+          <View style={styles.progressContainer}>
+            <View style={[styles.progressBar, { width: `${fillPercentage}%` }]} />
+          </View>
+
+
 
           {/* Large JOIN Button */}
           <TouchableOpacity style={[styles.largeJoinButton, joined && styles.joinedButton]} onPress={handleJoinContest} disabled={joined}>
@@ -225,12 +227,24 @@ const styles = StyleSheet.create({
   content: { flex: 1, paddingHorizontal: 16, paddingTop: 20 },
 
   // Card styles (matching ContestItem.js)
-  card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#E0E0E0', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3, },
+  card: { backgroundColor: '#FFFFFF',
+     borderRadius: 0,
+      padding: 16,
+       borderWidth: 0,
+        borderColor: '#E0E0E0',
+         shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+           shadowOpacity: 0.1,
+            shadowRadius: 4,
+             elevation: 1,
+             marginHorizontal: -15,
+             marginVertical: -20,
+   },
 
-  guaranteedSection: { marginBottom: 12 },
-  guaranteedText: { color: '#4CAF50', fontSize: 12, fontWeight: '500' },
+  guaranteedSection: { marginBottom: 5, marginTop: 10 },
+  guaranteedText: { color: 'grey', fontSize: 12, fontWeight: '500' },
   largeJoinButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#008A3C',
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: 'center',
@@ -254,11 +268,15 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     overflow: 'hidden',
   },
-  progressBar: { backgroundColor: '#F44336', height: '100%', borderRadius: 10 },
+  progressBar:
+    { backgroundColor: '#F44336', 
+      height: '100%', 
+      borderRadius: 10,
+    },
   spotsSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 5,
   },
   spotsLeftText: { color: '#F44336', fontSize: 12, fontWeight: 'bold' },
   totalSpotsText: { color: '#666', fontSize: 12 },

@@ -255,7 +255,7 @@ const ContestScreen = ({ navigation }) => {
         visible={sheetVisible}
         onClose={() => setSheetVisible(false)}
         entryFee={(selectedContest && selectedContest.entryFee) || 0}
-        payable={(selectedContest && Math.max(0, selectedContest.entryFee - 25)) || 0}
+        payable={(selectedContest && Math.max(0, selectedContest.entryFee)) || 0}
         onConfirm={handleConfirmJoin}
       />
     </View>
@@ -309,9 +309,10 @@ const styles = StyleSheet.create({
   },
   sectionHeaderText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '800',
     color: '#333',
-    letterSpacing: 0.3,
+    letterSpacing: 0.2,
+    marginBottom: -10,
   },
   contestWrapper: {
     backgroundColor: '#ffffff',

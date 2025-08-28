@@ -145,9 +145,9 @@ const ContestDetail = ({ route, navigation }) => {
 
   const formatPrizeAmount = (amount) => {
     if (amount >= 10000000) return `${(amount / 10000000).toFixed(0)} Crore`;
-    if (amount >= 100000) return `${(amount / 100000).toFixed(1)} Lakhs`;
-    if (amount >= 1000) return `${(amount / 1000).toFixed(1)}K`;
-    return amount.toString();
+    if (amount >= 100000) return `${(amount / 100000).toFixed(2)} Lakhs`;
+    //if (amount >= 1000) return `${(amount / 1000).toFixed(1)}K`;
+    return Number(amount || 0).toLocaleString('en-IN');
   };
 
   const formatSpots = (spots) => spots >= 10000 ? spots.toLocaleString() : spots.toString();
@@ -256,7 +256,7 @@ const ContestDetail = ({ route, navigation }) => {
         visible={sheetVisible}
         onClose={() => setSheetVisible(false)}
         entryFee={entryFee}
-        payable={Math.max(0, entryFee - 25)}
+        payable={Math.max(0, entryFee)}
         onConfirm={handleSheetConfirm}
       />
     </View>

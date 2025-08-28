@@ -9,6 +9,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import EntryScreen from './screens/EntryScreen';
 import ContestScreen from './screens/ContestScreen';
 import ContestDetail from './components/Contestdetail';
+import ContestFullScreen from './screens/ContestFullScreen';
 import { CountdownStore } from './services/CountdownStore';
 
 // Error Boundary Component
@@ -102,6 +103,14 @@ export default function App() {
             options={{ 
               headerShown: false,
               animation: 'slide_from_bottom'
+            }} 
+          />
+          <Stack.Screen 
+            name="ContestFull" 
+            component={ContestFullScreen} 
+            options={{ 
+              headerShown: false,
+              animation: 'slide_from_right'
             }} 
           />
         </Stack.Navigator>

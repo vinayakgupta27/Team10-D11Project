@@ -34,7 +34,7 @@ const ContestItem = ({ contest, onPress, onJoin }) => {
     // if (amount >= 1000) {
     //   return `${(amount / 1000).toFixed(1)}K`;
     // }
-    return amount.toString();
+    return Number(amount || 0).toLocaleString('en-IN');
   }
 
   // Format spots display based on the design

@@ -166,7 +166,7 @@ const ContestScreen = ({ navigation }) => {
                 Alert.alert('Success', 'You have successfully joined the contest!');
               } catch (e) {
                 JoinedStore.markUnjoined(id, selectedContest.currentSize || 0);
-                Alert.alert('Join Failed', 'Contest may be full or unavailable.');
+                navigation.navigate('ContestFull');
               }
             },
           },

@@ -29,3 +29,10 @@ To run your application:
 * https://discord.gg/6ry7aqPWXy[Vert.x Discord]
 
 
+Backend:
+
+Build: mvnw -DskipTests package
+Run(foreground): java -jar target/starter-1.0.0-SNAPSHOT-fat.jar
+Run(Background with logs): nohup java -jar target/starter-1.0.0-SNAPSHOT-fat.jar > backend.log 2>&1 & tail -f backend.log
+Verify: curl -i http://localhost:8080/api/contests
+

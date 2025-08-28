@@ -1,5 +1,5 @@
 // screens/ContestScreen.js
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { JoinedStore } from '../services/JoinedStore';
 import { CountdownStore } from '../services/CountdownStore';
 
-const ContestScreen = ({ navigation }) => {
+const ContestScreen = React.memo(({ navigation }) => {
   const [contests, setContests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedContest, setSelectedContest] = useState(null);
@@ -26,7 +26,6 @@ const ContestScreen = ({ navigation }) => {
   const [timeLeft, setTimeLeft] = useState('');
 
   const matchInfo = useMemo(() => ({ team1: 'BPH', team2: 'OVI' }), []);
-  const matchStartTime = useMemo(() => new Date(Date.now() + (11 * 60 + 43) * 60 * 1000), []);
 
   useEffect(() => {
     loadContests();
@@ -52,8 +51,7 @@ const ContestScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    // Initialize shared countdown once
-    CountdownStore.setTarget(matchStartTime.getTime());
+    // Subscribe to global countdown (initialized in App.js)
     const update = () => {
       const ms = CountdownStore.getRemaining();
       const totalSeconds = Math.floor(ms / 1000);
@@ -66,9 +64,9 @@ const ContestScreen = ({ navigation }) => {
     update();
     const unsub = CountdownStore.subscribe(update);
     return () => unsub();
-  }, [matchStartTime]);
+  }, []);
 
-  const loadContests = async () => {
+  const loadContests = useCallback(async () => {
     try {
       setLoading(true);
       const contests = await ContestService.getAllContests();
@@ -94,23 +92,23 @@ const ContestScreen = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const onRefresh = async () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await loadContests();
     setRefreshing(false);
-  };
+  }, [loadContests]);
 
-  const handleContestPress = (contest) => {
+  const handleContestPress = useCallback((contest) => {
     // Navigate to details with only serializable data; syncing handled via JoinedStore
     navigation.navigate('ContestDetail', { contest });
-  };
+  }, [navigation]);
 
-  const handleJoinPress = (contest) => {
+  const handleJoinPress = useCallback((contest) => {
     setSelectedContest(contest);
     setSheetVisible(true);
-  };
+  }, []);
 
   const handleConfirmJoin = () => {
     const fee = (selectedContest && selectedContest.entryFee) || 0;
@@ -138,9 +136,11 @@ const ContestScreen = ({ navigation }) => {
     }, 150);
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = useCallback(({ item }) => (
     <ContestItem contest={item} onPress={handleContestPress} onJoin={handleJoinPress} />
-  );
+  ), [handleContestPress, handleJoinPress]);
+
+  const keyExtractor = useCallback((item, index) => `${item.contestId || item.id || index}`, []);
 
   if (loading) {
     return (
@@ -175,10 +175,28 @@ const ContestScreen = ({ navigation }) => {
           resizeMode="cover"
         />
         <View style={styles.headerRow}>
-          <Text onPress={() => navigation.goBack()} style={styles.backArrow}>←</Text>
+          <Text 
+            onPress={() => navigation.goBack()} 
+            style={styles.backArrow}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            accessibilityHint="Return to previous screen"
+          >
+            ←
+          </Text>
           <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>{matchInfo.team1} v {matchInfo.team2}</Text>
-            <Text style={styles.headerSubtitle}>{timeLeft}</Text>
+            <Text 
+              style={styles.headerTitle}
+              accessibilityRole="header"
+            >
+              {matchInfo.team1} v {matchInfo.team2}
+            </Text>
+            <Text 
+              style={styles.headerSubtitle}
+              accessibilityLabel={`Match starts in ${timeLeft}`}
+            >
+              {timeLeft}
+            </Text>
           </View>
           <View style={{ width: 24 }} />
         </View>
@@ -186,7 +204,7 @@ const ContestScreen = ({ navigation }) => {
 
       <FlatList
         data={contests}
-        keyExtractor={(item, index) => `${item.contestId || item.id || index}`}
+        keyExtractor={keyExtractor}
         renderItem={renderItem}
         refreshControl={
           <RefreshControl
@@ -198,6 +216,17 @@ const ContestScreen = ({ navigation }) => {
         }
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        updateCellsBatchingPeriod={50}
+        windowSize={10}
+        getItemLayout={(data, index) => ({
+          length: 120, // Approximate item height
+          offset: 120 * index,
+          index,
+        })}
+        accessibilityRole="list"
+        accessibilityLabel="Contest list"
       />
 
       <JoinConfirmSheet
@@ -209,7 +238,7 @@ const ContestScreen = ({ navigation }) => {
       />
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },

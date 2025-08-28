@@ -83,3 +83,5 @@ API: GET /api/contests
 20:12:58.780 [vert.x-eventloop-thread-1] DEBUG io.netty.handler.codec.compression.ZlibCodecFactory -- -Dio.netty.noJdkZlibDecoder: false
 20:12:58.780 [vert.x-eventloop-thread-1] DEBUG io.netty.handler.codec.compression.ZlibCodecFactory -- -Dio.netty.noJdkZlibEncoder: false
 20:12:58.780 [vert.x-eventloop-thread-1] DEBUG io.netty.handler.codec.compression.ZlibCodecFactory -- JZlib not in the classpath; the only window bits supported value will be 15
+12:05:11.770 [vert.x-eventloop-thread-1] DEBUG io.netty.buffer.PoolThreadCache -- Freed 13 thread-local buffer(s) from thread: vert.x-eventloop-thread-1
+12:05:11.771 [vert.x-eventloop-thread-1] DEBUG io.netty.buffer.PoolThreadCache -- Freed 9 thread-local buffer(s) from thread: vert.x-eventloop-thread-1

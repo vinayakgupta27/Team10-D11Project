@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-  Image,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert, Image} from 'react-native';
 import { ContestService } from '../services/ContestService';
 import { JoinedStore } from '../services/JoinedStore';
 import JoinConfirmSheet from './JoinConfirmSheet';
@@ -295,18 +286,8 @@ const styles = StyleSheet.create({
   content: { flex: 1, paddingHorizontal: 16, paddingTop: 20 },
   
   // Card styles (matching ContestItem.js)
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#E0E0E0', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3, },
+  
   guaranteedSection: { marginBottom: 12 },
   guaranteedText: { color: '#4CAF50', fontSize: 12, fontWeight: '500' },
   largeJoinButton: {

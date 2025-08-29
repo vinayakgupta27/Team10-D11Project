@@ -89,8 +89,7 @@ public class MainVerticle extends AbstractVerticle {
           }
           
           JsonObject response = new JsonObject()
-              .put("contests", contests)
-              .put("count", contests.size());
+              .put("contests", contests);
           
           ctx.response()
               .putHeader("Content-Type", "application/json")

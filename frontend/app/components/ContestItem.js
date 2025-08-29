@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import Icon from './shared/Icon';
-import { formatPrizeAmount, formatSpots, calculateFillPercentage, calculateWinnerPercentage, calculateSpotsLeft, isPracticeContest } from '../utils/contestUtils';
+import { formatPrizeAmount, formatSpots, calculateFillPercentage, calculateWinnerPercentage, calculateSpotsLeft, isPracticeContest, formatEntryFee } from '../utils/contestUtils';
 
 // --- Main Contest Item Component ---
 const ContestItem = ({ contest, onPress, onJoin }) => {
     // Extract values from database using shared utilities
   const isPractice = isPracticeContest(contest);
   const prizePool = formatPrizeAmount(contest.prizeAmount || 0);
-  const entryFee = contest.entryFee || 0;
+  const entryFee = formatEntryFee(contest.entryFee || 0);
   const totalSpots = contest.contestSize || 0;
   const currentSize = contest.currentSize || 0;
   const spotsLeft = calculateSpotsLeft(totalSpots, currentSize);
@@ -56,7 +56,7 @@ const ContestItem = ({ contest, onPress, onJoin }) => {
             </View>
             <View style={styles.rightSection}>
               <Pressable
-                onPress={(e) => { e.stopPropagation && e.stopPropagation(); handleJoin(); }}
+                onPress={(e) => { handleJoin();}}
                 style={
                   contest && contest.joined
                     ? styles.joinedButton

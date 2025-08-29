@@ -1,10 +1,8 @@
-// Shared utility functions for contest formatting
 
 export const formatPrizeAmount = (amount) => {
   if (amount >= 10000000) return `${(amount / 10000000).toFixed(0)} Crore`;
   if (amount >= 100000) return `${(amount / 100000).toFixed(2)} Lakhs`;
-  // if (amount >= 1000) return `${(amount / 1000).toFixed(1)}K`;
-  return amount.toString();
+  return amount.toLocaleString('en-IN');
 };
 
 export const formatSpots = (spots) => {
@@ -28,4 +26,12 @@ export const calculateSpotsLeft = (totalSpots, currentSize) => {
 
 export const isPracticeContest = (contest) => {
   return contest.contestCategory === 'free' || contest.entryFee === 0;
+};
+
+export const formatWithCommas = (number) => {
+  return number.toLocaleString('en-IN');
+};
+
+export const formatEntryFee = (fee) => {
+  return fee.toLocaleString('en-IN');
 };

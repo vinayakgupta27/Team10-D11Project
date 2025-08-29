@@ -5,7 +5,7 @@ import { JoinedStore } from '../services/JoinedStore';
 import JoinConfirmSheet from './JoinConfirmSheet';
 import MatchHeader from './shared/MatchHeader';
 import Icon from './shared/Icon';
-import { formatPrizeAmount, formatSpots } from '../utils/contestUtils';
+import { formatPrizeAmount, formatSpots, formatEntryFee } from '../utils/contestUtils';
 import { useCountdown } from '../hooks/useCountdown';
 
 const ContestDetail = ({ route, navigation }) => {
@@ -22,15 +22,6 @@ const ContestDetail = ({ route, navigation }) => {
     team2: 'OVI',
   };
 
-  useEffect(() => {
-    if (contest) {
-      fetchRealTimeData();
-      const interval = setInterval(fetchRealTimeData, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [contest]);
-
-
   // Keep in sync with joins done from the list using the JoinedStore
   useEffect(() => {
     const id = (contest?.contestId || contest?.id);
@@ -44,7 +35,7 @@ const ContestDetail = ({ route, navigation }) => {
           const merged = {
             ...prev,
             joined: js.joined ? true : (prev?.joined || false),
-            currentSize: typeof js.currentSize === 'number' ? js.currentSize : (prev?.currentSize),
+            currentSize: (prev?.currentSize),
           };
           return merged;
         });
@@ -56,31 +47,7 @@ const ContestDetail = ({ route, navigation }) => {
     return () => unsub();
   }, [contest]);
 
-  const fetchRealTimeData = async () => {
-    try {
-      setLoading(true);
-      const updatedContest = await ContestService.getContestById(contest.contestId || contest.id);
-      if (updatedContest) {
-        // Merge with any joined state from the shared store to avoid mismatches
-        const id = updatedContest.contestId || updatedContest.id || contest.contestId || contest.id;
-        const js = JoinedStore.get(id);
-        if (js) {
-          if (typeof js.currentSize === 'number') {
-            updatedContest.currentSize = js.currentSize;
-          }
-          if (js.joined) {
-            updatedContest.joined = true;
-          }
-        }
-        setContestData(updatedContest);
-        if (updatedContest.joined) setJoined(true);
-      }
-    } catch (error) {
-      console.error('Failed to fetch real-time data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const handleJoinContest = () => {
     if (joined) return;
@@ -105,7 +72,7 @@ const ContestDetail = ({ route, navigation }) => {
       JoinedStore.markUnjoined(id, contest?.currentSize || 0);
       setJoined(false);
       setContestData((prev) => ({ ...prev, joined: false }));
-      navigation.navigate('ContestFull');
+      navigation.navigate('ContestFullScreen');
     }
   };
 
@@ -141,7 +108,7 @@ const ContestDetail = ({ route, navigation }) => {
   const spotsLeft = totalSpots - currentSize;
   const fillPercentage = (currentSize / totalSpots) * 100;
   const prizeAmount = contestData.prizeAmount || 200000000;
-  const entryFee = contestData.entryFee || 20;
+  const entryFee = formatEntryFee(contestData.entryFee || 20);
   const firstPrize = contestData.firstPrize || 100000;
   const winnerPercentage = Math.round(((contestData.noOfWinners || 46075) / totalSpots) * 100);
   const maxTeams = contestData.maxTeamsAllowed || 6;

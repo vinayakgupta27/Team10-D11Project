@@ -1,19 +1,17 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Pressable, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as Haptics from 'expo-haptics';
 
 const { width, height } = Dimensions.get('window');
 
 export default function EntryScreen({ navigation }) {
   return (
-    <View style={styles.container}>
       <LinearGradient
         colors={["#8A0F1A", "#16181D", "#0D0F13"]}
         locations={[0, 0.35, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={styles.gradient}
+        style={[styles.gradient, styles.container]}
       >
         {/* Background Grid Pattern */}
         <Image
@@ -34,20 +32,16 @@ export default function EntryScreen({ navigation }) {
             <Text style={styles.tagline}>Create your team & win big!</Text>
           </View>
 
-          {/* Action Section */}
-          <View style={styles.actionSection}>
+          
             <Pressable
               style={({ pressed }) => [
+                styles.actionSection,
                 styles.joinButton,
                 pressed && styles.joinButtonPressed
               ]}
               onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 navigation.navigate('ContestList');
               }}
-              accessibilityRole="button"
-              accessibilityLabel="Join Match"
-              accessibilityHint="Navigate to contest list to join a match"
             >
               <LinearGradient
                 colors={['#4CAF50', '#2E7D32']}
@@ -58,10 +52,8 @@ export default function EntryScreen({ navigation }) {
                 <Text style={styles.buttonText}>Join Match</Text>
               </LinearGradient>
             </Pressable>
-          </View>
         </View>
       </LinearGradient>
-    </View>
   );
 }
 

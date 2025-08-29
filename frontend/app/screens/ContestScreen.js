@@ -7,6 +7,7 @@ import MatchHeader from '../components/shared/MatchHeader';
 import { ContestService } from '../services/ContestService';
 import { JoinedStore } from '../services/JoinedStore';
 import { useCountdown } from '../hooks/useCountdown';
+import { formatEntryFee } from '../utils/contestUtils';
 
 const ContestScreen = React.memo(({ navigation }) => {
   const [contests, setContests] = useState([]);
@@ -52,6 +53,11 @@ const ContestScreen = React.memo(({ navigation }) => {
 
   useEffect(() => {
     loadContests();
+    const interval = setInterval(() => {
+      loadContests();
+    }, 3000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -125,7 +131,7 @@ const ContestScreen = React.memo(({ navigation }) => {
     setTimeout(() => {
       Alert.alert(
         'Join Contest',
-        `Do you want to join this contest for ₹${fee}?`,
+        `Do you want to join this contest for ₹${formatEntryFee(fee)}?`,
         [
           { text: 'Cancel', style: 'cancel' },
           {
@@ -140,7 +146,7 @@ const ContestScreen = React.memo(({ navigation }) => {
                 Alert.alert('Success', 'You have successfully joined the contest!');
               } catch (e) {
                 JoinedStore.markUnjoined(id, selectedContest.currentSize || 0);
-                navigation.navigate('ContestFull');
+                navigation.navigate('ContestFullScreen');
               }
             },
           },
@@ -149,11 +155,6 @@ const ContestScreen = React.memo(({ navigation }) => {
     }, 150);
   };
 
-  const renderItem = useCallback(({ item }) => (
-    <ContestItem contest={item} onPress={handleContestPress} onJoin={handleJoinPress} />
-  ), [handleContestPress, handleJoinPress]);
-
-  const keyExtractor = useCallback((item, index) => `${item.contestId || item.id || index}`, []);
 
 
   if (sortedSections.length === 0) {
@@ -172,6 +173,7 @@ const ContestScreen = React.memo(({ navigation }) => {
         team2={matchInfo.team2}
         timeLeft={timeLeft}
         onBackPress={() => navigation.goBack()}
+        onRefresh={onRefresh}
       />
 
       <FlatList

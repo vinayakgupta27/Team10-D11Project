@@ -56,7 +56,7 @@ const ContestItem = ({ contest, onPress, onJoin }) => {
             </View>
             <View style={styles.rightSection}>
               <Pressable
-                onPress={(e) => { e.stopPropagation && e.stopPropagation(); handleJoin(); }}
+                onPress={(e) => { handleJoin();}}
                 style={
                   contest && contest.joined
                     ? styles.joinedButton

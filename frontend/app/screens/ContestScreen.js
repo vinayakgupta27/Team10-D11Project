@@ -87,7 +87,7 @@ const ContestScreen = React.memo(({ navigation }) => {
         return {
           ...c,
           joined: js.joined ? true : c.joined,
-          currentSize: typeof js.currentSize === 'number' ? js.currentSize : c.currentSize,
+          currentSize: c.currentSize,
         };
       });
       setContests(merged);
@@ -140,7 +140,7 @@ const ContestScreen = React.memo(({ navigation }) => {
                 Alert.alert('Success', 'You have successfully joined the contest!');
               } catch (e) {
                 JoinedStore.markUnjoined(id, selectedContest.currentSize || 0);
-                navigation.navigate('ContestFull');
+                navigation.navigate('ContestFullScreen');
               }
             },
           },
@@ -149,11 +149,7 @@ const ContestScreen = React.memo(({ navigation }) => {
     }, 150);
   };
 
-  const renderItem = useCallback(({ item }) => (
-    <ContestItem contest={item} onPress={handleContestPress} onJoin={handleJoinPress} />
-  ), [handleContestPress, handleJoinPress]);
 
-  const keyExtractor = useCallback((item, index) => `${item.contestId || item.id || index}`, []);
 
   if (loading) {
     return (

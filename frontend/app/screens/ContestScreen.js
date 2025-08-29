@@ -87,7 +87,7 @@ const ContestScreen = React.memo(({ navigation }) => {
         return {
           ...c,
           joined: js.joined ? true : c.joined,
-          currentSize: typeof js.currentSize === 'number' ? js.currentSize : c.currentSize,
+          currentSize: c.currentSize,
         };
       });
       setContests(merged);

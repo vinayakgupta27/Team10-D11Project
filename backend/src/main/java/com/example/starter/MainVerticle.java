@@ -25,7 +25,7 @@ public class MainVerticle extends AbstractVerticle {
     
     // Database connection
     MySQLConnectOptions connectOptions = new MySQLConnectOptions()
-        .setPort(3306)
+        .setPort(3306)≠≠
         .setHost("localhost")
         .setDatabase("Team10Project")
         .setUser("root")

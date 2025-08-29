@@ -11,6 +11,7 @@ import ContestScreen from './screens/ContestScreen';
 import ContestDetail from './components/Contestdetail';
 import ContestFullScreen from './screens/ContestFullScreen';
 import { CountdownStore } from './services/CountdownStore';
+import ContestFullScreen from './screens/ContestFullScreen';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -106,7 +107,7 @@ export default function App() {
             }} 
           />
           <Stack.Screen 
-            name="ContestFull" 
+            name="ContestFullScreen" 
             component={ContestFullScreen} 
             options={{ 
               headerShown: false,

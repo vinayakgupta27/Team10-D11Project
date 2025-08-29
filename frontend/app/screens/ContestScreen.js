@@ -87,12 +87,12 @@ const ContestScreen = React.memo(({ navigation }) => {
         return {
           ...c,
           joined: js.joined ? true : c.joined,
-          currentSize: typeof js.currentSize === 'number' ? js.currentSize : c.currentSize,
+          currentSize: c.currentSize,
         };
       });
       setContests(merged);
     } catch (error) {
-      console.error('Failed to load contests:', error);
+      // console.error('Failed to load contests:', error);
       Alert.alert(
         'Error',
         'Failed to load contests. Please check your internet connection and try again.',
@@ -155,14 +155,6 @@ const ContestScreen = React.memo(({ navigation }) => {
 
   const keyExtractor = useCallback((item, index) => `${item.contestId || item.id || index}`, []);
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>Loading contests...</Text>
-      </View>
-    );
-  }
 
   if (sortedSections.length === 0) {
     return (

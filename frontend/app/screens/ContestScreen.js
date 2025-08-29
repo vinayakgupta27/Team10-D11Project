@@ -7,6 +7,7 @@ import MatchHeader from '../components/shared/MatchHeader';
 import { ContestService } from '../services/ContestService';
 import { JoinedStore } from '../services/JoinedStore';
 import { useCountdown } from '../hooks/useCountdown';
+import { formatEntryFee } from '../utils/contestUtils';
 
 const ContestScreen = React.memo(({ navigation }) => {
   const [contests, setContests] = useState([]);
@@ -125,7 +126,7 @@ const ContestScreen = React.memo(({ navigation }) => {
     setTimeout(() => {
       Alert.alert(
         'Join Contest',
-        `Do you want to join this contest for ₹${fee}?`,
+        `Do you want to join this contest for ₹${formatEntryFee(fee)}?`,
         [
           { text: 'Cancel', style: 'cancel' },
           {

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Dimensions, Pressable } from 'react-native';
+import { formatEntryFee } from '../utils/contestUtils';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -27,16 +28,16 @@ const JoinConfirmSheet = ({ visible, onClose, entryFee, payable, onConfirm }) =>
           <Text style={styles.closeText}>✕</Text>
         </Pressable>
         <Text style={styles.title}>Confirmation</Text>
-        <Text style={styles.subtitle}>Amount Unutilised + Winnings = ₹{entryFee}</Text>
+        <Text style={styles.subtitle}>Amount Unutilised + Winnings = ₹{formatEntryFee(entryFee)}</Text>
 
         <View style={styles.row}> 
           <Text style={styles.label}>Entry</Text>
-          <Text style={styles.value}>₹{entryFee}</Text>
+          <Text style={styles.value}>₹{formatEntryFee(entryFee)}</Text>
         </View>
 
         <View style={styles.row}> 
           <Text style={styles.labelBold}>To Pay</Text>
-          <Text style={styles.valueBold}>₹{payable}</Text>
+          <Text style={styles.valueBold}>₹{formatEntryFee(payable)}</Text>
         </View>
 
         <Text style={styles.tnc}>I agree with the standard T&Cs</Text>

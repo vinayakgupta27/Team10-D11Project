@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 16,
     elevation: 0,
+    alignSelf: 'center',
   },
   joinButtonPressed: {
     transform: [{ scale: 0.98 }],

@@ -5,7 +5,7 @@ import { JoinedStore } from '../services/JoinedStore';
 import JoinConfirmSheet from './JoinConfirmSheet';
 import MatchHeader from './shared/MatchHeader';
 import Icon from './shared/Icon';
-import { formatPrizeAmount, formatSpots } from '../utils/contestUtils';
+import { formatPrizeAmount, formatSpots, formatEntryFee } from '../utils/contestUtils';
 import { useCountdown } from '../hooks/useCountdown';
 
 const ContestDetail = ({ route, navigation }) => {
@@ -108,7 +108,7 @@ const ContestDetail = ({ route, navigation }) => {
   const spotsLeft = totalSpots - currentSize;
   const fillPercentage = (currentSize / totalSpots) * 100;
   const prizeAmount = contestData.prizeAmount || 200000000;
-  const entryFee = contestData.entryFee || 20;
+  const entryFee = formatEntryFee(contestData.entryFee || 20);
   const firstPrize = contestData.firstPrize || 100000;
   const winnerPercentage = Math.round(((contestData.noOfWinners || 46075) / totalSpots) * 100);
   const maxTeams = contestData.maxTeamsAllowed || 6;
@@ -168,14 +168,6 @@ const ContestDetail = ({ route, navigation }) => {
               <Text style={styles.footerText}>Upto {maxTeams}</Text>
             </View>
           </View>
-
-          {/* Real-time indicator */}
-          {loading && (
-            <View style={styles.loadingIndicator}>
-              <ActivityIndicator size="small" color="#4CAF50" />
-              <Text style={styles.loadingText}>Updating...</Text>
-            </View>
-          )}
         </View>
       </ScrollView>
       <JoinConfirmSheet

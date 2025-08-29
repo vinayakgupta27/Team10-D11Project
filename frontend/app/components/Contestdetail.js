@@ -168,14 +168,6 @@ const ContestDetail = ({ route, navigation }) => {
               <Text style={styles.footerText}>Upto {maxTeams}</Text>
             </View>
           </View>
-
-          {/* Real-time indicator */}
-          {loading && (
-            <View style={styles.loadingIndicator}>
-              <ActivityIndicator size="small" color="#4CAF50" />
-              <Text style={styles.loadingText}>Updating...</Text>
-            </View>
-          )}
         </View>
       </ScrollView>
       <JoinConfirmSheet

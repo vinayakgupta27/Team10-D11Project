@@ -4,8 +4,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { CountdownStore } from '../services/CountdownStore';
 
 export default function ContestFullScreen({ navigation }) {
+
   const goBackToList = () => {
-    navigation.navigate('ContestList');
+    navigation.popTo('ContestList');
   };
 
   const matchInfo = useMemo(() => ({ team1: 'BPH', team2: 'OVI' }), []);

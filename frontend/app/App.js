@@ -11,7 +11,6 @@ import ContestScreen from './screens/ContestScreen';
 import ContestDetail from './components/Contestdetail';
 import ContestFullScreen from './screens/ContestFullScreen';
 import { CountdownStore } from './services/CountdownStore';
-import ContestFullScreen from './screens/ContestFullScreen';
 
 // Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -76,10 +75,12 @@ export default function App() {
             headerTitleAlign: 'center',
             headerBackTitleVisible: true,
             contentStyle: styles.container,
+            presentation: 'card',
             animation: 'slide_from_right',
             animationDuration: 300,
             gestureEnabled: true,
             gestureDirection: 'horizontal',
+            animation: 'none',
           }}
         >
           <Stack.Screen 
@@ -95,7 +96,10 @@ export default function App() {
             component={ContestScreen} 
             options={{ 
               headerShown: false,
-              animation: 'slide_from_right'
+              presentation: 'card',
+            animation: 'slide_from_right',
+            animationDuration: 300
+
             }} 
           />
           <Stack.Screen 
@@ -103,7 +107,9 @@ export default function App() {
             component={ContestDetail} 
             options={{ 
               headerShown: false,
-              animation: 'slide_from_bottom'
+              presentation: 'card',
+            animation: 'slide_from_right',
+            animationDuration: 300
             }} 
           />
           <Stack.Screen 
@@ -111,7 +117,10 @@ export default function App() {
             component={ContestFullScreen} 
             options={{ 
               headerShown: false,
-              animation: 'slide_from_right'
+              animation: 'slide_from_right',
+              presentation: 'card',
+            animation: 'slide_from_right',
+            animationDuration: 300
             }} 
           />
         </Stack.Navigator>

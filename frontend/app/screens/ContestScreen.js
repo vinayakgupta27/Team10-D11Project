@@ -52,11 +52,6 @@ const ContestScreen = React.memo(({ navigation }) => {
 
   useEffect(() => {
     loadContests();
-    const interval = setInterval(() => {
-      loadContests();
-    }, 3000);
-    
-    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -154,7 +149,22 @@ const ContestScreen = React.memo(({ navigation }) => {
     }, 150);
   };
 
+  console.log(":: navigation Contest Screen", navigation.getState().routeNames);
 
+  const renderItem = useCallback(({ item }) => (
+    <ContestItem contest={item} onPress={handleContestPress} onJoin={handleJoinPress} />
+  ), [handleContestPress, handleJoinPress]);
+
+  const keyExtractor = useCallback((item, index) => `${item.contestId || item.id || index}`, []);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+        <Text style={styles.loadingText}>Loading contests...</Text>
+      </View>
+    );
+  }
 
   if (sortedSections.length === 0) {
     return (
@@ -172,7 +182,6 @@ const ContestScreen = React.memo(({ navigation }) => {
         team2={matchInfo.team2}
         timeLeft={timeLeft}
         onBackPress={() => navigation.goBack()}
-        onRefresh={onRefresh}
       />
 
       <FlatList

@@ -22,15 +22,6 @@ const ContestDetail = ({ route, navigation }) => {
     team2: 'OVI',
   };
 
-  useEffect(() => {
-    if (contest) {
-      fetchRealTimeData();
-      const interval = setInterval(fetchRealTimeData, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [contest]);
-
-
   // Keep in sync with joins done from the list using the JoinedStore
   useEffect(() => {
     const id = (contest?.contestId || contest?.id);
@@ -44,7 +35,7 @@ const ContestDetail = ({ route, navigation }) => {
           const merged = {
             ...prev,
             joined: js.joined ? true : (prev?.joined || false),
-            currentSize: typeof js.currentSize === 'number' ? js.currentSize : (prev?.currentSize),
+            currentSize: (prev?.currentSize),
           };
           return merged;
         });
@@ -56,31 +47,7 @@ const ContestDetail = ({ route, navigation }) => {
     return () => unsub();
   }, [contest]);
 
-  const fetchRealTimeData = async () => {
-    try {
-      setLoading(true);
-      const updatedContest = await ContestService.getContestById(contest.contestId || contest.id);
-      if (updatedContest) {
-        // Merge with any joined state from the shared store to avoid mismatches
-        const id = updatedContest.contestId || updatedContest.id || contest.contestId || contest.id;
-        const js = JoinedStore.get(id);
-        if (js) {
-          if (typeof js.currentSize === 'number') {
-            updatedContest.currentSize = js.currentSize;
-          }
-          if (js.joined) {
-            updatedContest.joined = true;
-          }
-        }
-        setContestData(updatedContest);
-        if (updatedContest.joined) setJoined(true);
-      }
-    } catch (error) {
-      console.error('Failed to fetch real-time data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const handleJoinContest = () => {
     if (joined) return;
@@ -105,7 +72,7 @@ const ContestDetail = ({ route, navigation }) => {
       JoinedStore.markUnjoined(id, contest?.currentSize || 0);
       setJoined(false);
       setContestData((prev) => ({ ...prev, joined: false }));
-      navigation.navigate('ContestFull');
+      navigation.navigate('ContestFullScreen');
     }
   };
 

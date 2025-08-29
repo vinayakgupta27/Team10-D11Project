@@ -52,6 +52,11 @@ const ContestScreen = React.memo(({ navigation }) => {
 
   useEffect(() => {
     loadContests();
+    const interval = setInterval(() => {
+      loadContests();
+    }, 3000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -151,15 +156,6 @@ const ContestScreen = React.memo(({ navigation }) => {
 
 
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4CAF50" />
-        <Text style={styles.loadingText}>Loading contests...</Text>
-      </View>
-    );
-  }
-
   if (sortedSections.length === 0) {
     return (
       <View style={styles.emptyContainer}>
@@ -176,6 +172,7 @@ const ContestScreen = React.memo(({ navigation }) => {
         team2={matchInfo.team2}
         timeLeft={timeLeft}
         onBackPress={() => navigation.goBack()}
+        onRefresh={onRefresh}
       />
 
       <FlatList

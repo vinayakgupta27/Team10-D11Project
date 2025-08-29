@@ -1,38 +1,56 @@
-= Starter
+# 🏏 Dream11 Fantasy Sports App
 
-image:https://img.shields.io/badge/vert.x-4.5.17-purple.svg[link="https://vertx.io"]
+## Quick Start Commands
 
-This application was generated using http://start.vertx.io
+### Prerequisites
+- Java 11+, Maven, MySQL, Node.js, Expo CLI
 
-== Building
+### Database Setup
+```sql
+mysql -u root -p
+CREATE DATABASE Team10Project;
+USE Team10Project;
 
-To launch your tests:
+CREATE TABLE contests (
+    contestId BIGINT PRIMARY KEY AUTO_INCREMENT,
+    contestName VARCHAR(255) NOT NULL,
+    contestSize INT DEFAULT 0,
+    currentSize INT DEFAULT 0,
+    behaviour VARCHAR(100),
+    contestCategory VARCHAR(100),
+    entryFee DECIMAL(10,2) DEFAULT 0.00,
+    firstPrize DECIMAL(10,2) DEFAULT 0.00,
+    noOfWinners INT DEFAULT 0,
+    prizeAmount DECIMAL(10,2) DEFAULT 0.00,
+    isMultiple BOOLEAN DEFAULT FALSE,
+    maxTeamsAllowed INT DEFAULT 1,
+    title VARCHAR(255) DEFAULT 'General'
+);
+
+
 ```
-./mvnw clean test
+
+### Backend (Terminal 1)
+```bash
+cd Team10-D11Project/backend
+mvn clean compile exec:java
+```
+Wait for: `Server started on port 8080`
+
+
+### Frontend (Terminal 2)
+```bash
+cd Team10-D11Project/frontend/app
+npm install
+npm start
 ```
 
-To package your application:
+### Run on Device
+- **Android**: Press `a` in Expo terminal
+- **iOS**: Press `i` in Expo terminal  
+- **Physical Device**: Install Expo Go app and scan QR code
+
+### Test API
+```bash
+curl http://localhost:8080/api/contests
 ```
-./mvnw clean package
-```
-
-To run your application:
-```
-./mvnw clean compile exec:java
-```
-
-== Help
-
-* https://vertx.io/docs/[Vert.x Documentation]
-* https://stackoverflow.com/questions/tagged/vert.x?sort=newest&pageSize=15[Vert.x Stack Overflow]
-* https://groups.google.com/forum/?fromgroups#!forum/vertx[Vert.x User Group]
-* https://discord.gg/6ry7aqPWXy[Vert.x Discord]
-
-
-Backend:
-
-Build: mvnw -DskipTests package
-Run(foreground): java -jar target/starter-1.0.0-SNAPSHOT-fat.jar
-Run(Background with logs): nohup java -jar target/starter-1.0.0-SNAPSHOT-fat.jar > backend.log 2>&1 & tail -f backend.log
-Verify: curl -i http://localhost:8080/api/contests
-
